@@ -1,0 +1,11 @@
+xst -intstyle ise -ifn "/home/dasuni/Documents/14.7/ISE_DS/full_adder_add_subtract/adder4.xst" -ofn "/home/dasuni/Documents/14.7/ISE_DS/full_adder_add_subtract/adder4.syr" 
+xst -intstyle ise -ifn "/home/dasuni/Documents/14.7/ISE_DS/full_adder_add_subtract/adder4.xst" -ofn "/home/dasuni/Documents/14.7/ISE_DS/full_adder_add_subtract/adder4.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc full_adder_add_subtract.ucf -p xc6slx45-csg324-3 adder4.ngc adder4.ngd  
+map -intstyle ise -p xc6slx45-csg324-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o adder4_map.ncd adder4.ngd adder4.pcf 
+par -w -intstyle ise -ol high -mt off adder4_map.ncd adder4.ncd adder4.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml adder4.twx adder4.ncd -o adder4.twr adder4.pcf -ucf full_adder_add_subtract.ucf 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc full_adder_add_subtract.ucf -p xc6slx45-csg324-3 adder4.ngc adder4.ngd  
+map -intstyle ise -p xc6slx45-csg324-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o adder4_map.ncd adder4.ngd adder4.pcf 
+par -w -intstyle ise -ol high -mt off adder4_map.ncd adder4.ncd adder4.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml adder4.twx adder4.ncd -o adder4.twr adder4.pcf -ucf full_adder_add_subtract.ucf 
+bitgen -intstyle ise -f adder4.ut adder4.ncd 

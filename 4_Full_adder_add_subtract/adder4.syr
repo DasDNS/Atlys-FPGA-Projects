@@ -1,0 +1,447 @@
+Release 14.7 - xst P.20131013 (lin64)
+Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+--> 
+Parameter TMPDIR set to xst/projnav.tmp
+
+
+Total REAL time to Xst completion: 0.00 secs
+Total CPU time to Xst completion: 0.03 secs
+ 
+--> 
+Parameter xsthdpdir set to xst
+
+
+Total REAL time to Xst completion: 0.00 secs
+Total CPU time to Xst completion: 0.03 secs
+ 
+--> 
+Reading design: adder4.prj
+
+TABLE OF CONTENTS
+  1) Synthesis Options Summary
+  2) HDL Parsing
+  3) HDL Elaboration
+  4) HDL Synthesis
+       4.1) HDL Synthesis Report
+  5) Advanced HDL Synthesis
+       5.1) Advanced HDL Synthesis Report
+  6) Low Level Synthesis
+  7) Partition Report
+  8) Design Summary
+       8.1) Primitive and Black Box Usage
+       8.2) Device utilization summary
+       8.3) Partition Resource Summary
+       8.4) Timing Report
+            8.4.1) Clock Information
+            8.4.2) Asynchronous Control Signals Information
+            8.4.3) Timing Summary
+            8.4.4) Timing Details
+            8.4.5) Cross Clock Domains Report
+
+
+=========================================================================
+*                      Synthesis Options Summary                        *
+=========================================================================
+---- Source Parameters
+Input File Name                    : "adder4.prj"
+Ignore Synthesis Constraint File   : NO
+
+---- Target Parameters
+Output File Name                   : "adder4"
+Output Format                      : NGC
+Target Device                      : xc6slx45-3-csg324
+
+---- Source Options
+Top Module Name                    : adder4
+Automatic FSM Extraction           : YES
+FSM Encoding Algorithm             : Auto
+Safe Implementation                : No
+FSM Style                          : LUT
+RAM Extraction                     : Yes
+RAM Style                          : Auto
+ROM Extraction                     : Yes
+Shift Register Extraction          : YES
+ROM Style                          : Auto
+Resource Sharing                   : YES
+Asynchronous To Synchronous        : NO
+Shift Register Minimum Size        : 2
+Use DSP Block                      : Auto
+Automatic Register Balancing       : No
+
+---- Target Options
+LUT Combining                      : Auto
+Reduce Control Sets                : Auto
+Add IO Buffers                     : YES
+Global Maximum Fanout              : 100000
+Add Generic Clock Buffer(BUFG)     : 16
+Register Duplication               : YES
+Optimize Instantiated Primitives   : NO
+Use Clock Enable                   : Auto
+Use Synchronous Set                : Auto
+Use Synchronous Reset              : Auto
+Pack IO Registers into IOBs        : Auto
+Equivalent register Removal        : YES
+
+---- General Options
+Optimization Goal                  : Speed
+Optimization Effort                : 1
+Power Reduction                    : NO
+Keep Hierarchy                     : No
+Netlist Hierarchy                  : As_Optimized
+RTL Output                         : Yes
+Global Optimization                : AllClockNets
+Read Cores                         : YES
+Write Timing Constraints           : NO
+Cross Clock Analysis               : NO
+Hierarchy Separator                : /
+Bus Delimiter                      : <>
+Case Specifier                     : Maintain
+Slice Utilization Ratio            : 100
+BRAM Utilization Ratio             : 100
+DSP48 Utilization Ratio            : 100
+Auto BRAM Packing                  : NO
+Slice Utilization Ratio Delta      : 5
+
+=========================================================================
+
+
+=========================================================================
+*                          HDL Parsing                                  *
+=========================================================================
+Analyzing Verilog file "/home/dasuni/Documents/14.7/ISE_DS/full_adder_add_subtract/full_adder_add_subtract.v" into library work
+Parsing module <debounce_button>.
+Parsing module <adder4>.
+
+=========================================================================
+*                            HDL Elaboration                            *
+=========================================================================
+
+Elaborating module <adder4>.
+
+Elaborating module <debounce_button>.
+
+=========================================================================
+*                           HDL Synthesis                               *
+=========================================================================
+
+Synthesizing Unit <adder4>.
+    Related source file is "/home/dasuni/Documents/14.7/ISE_DS/full_adder_add_subtract/full_adder_add_subtract.v".
+    Found 1-bit register for signal <sub_mode>.
+    Found 5-bit subtractor for signal <a_ext[4]_b_ext[4]_sub_6_OUT> created at line 119.
+    Found 5-bit adder for signal <a_ext[4]_b_ext[4]_add_6_OUT> created at line 120.
+    Summary:
+	inferred   1 Adder/Subtractor(s).
+	inferred   1 D-type flip-flop(s).
+Unit <adder4> synthesized.
+
+Synthesizing Unit <debounce_button>.
+    Related source file is "/home/dasuni/Documents/14.7/ISE_DS/full_adder_add_subtract/full_adder_add_subtract.v".
+        CLK_HZ = 100000000
+    Found 1-bit register for signal <sync_2>.
+    Found 1-bit register for signal <press_pulse>.
+    Found 20-bit register for signal <counter>.
+    Found 1-bit register for signal <stable_state>.
+    Found 1-bit register for signal <sync_1>.
+    Found 20-bit adder for signal <counter[19]_GND_2_o_add_4_OUT> created at line 61.
+    Found 1-bit comparator equal for signal <sync_2_stable_state_equal_2_o> created at line 49
+    Found 20-bit comparator greater for signal <n0001> created at line 52
+    Summary:
+	inferred   1 Adder/Subtractor(s).
+	inferred  24 D-type flip-flop(s).
+	inferred   2 Comparator(s).
+Unit <debounce_button> synthesized.
+
+=========================================================================
+HDL Synthesis Report
+
+Macro Statistics
+# Adders/Subtractors                                   : 3
+ 20-bit adder                                          : 2
+ 5-bit addsub                                          : 1
+# Registers                                            : 11
+ 1-bit register                                        : 9
+ 20-bit register                                       : 2
+# Comparators                                          : 4
+ 1-bit comparator equal                                : 2
+ 20-bit comparator greater                             : 2
+
+=========================================================================
+
+=========================================================================
+*                       Advanced HDL Synthesis                          *
+=========================================================================
+
+
+Synthesizing (advanced) Unit <debounce_button>.
+The following registers are absorbed into counter <counter>: 1 register on signal <counter>.
+Unit <debounce_button> synthesized (advanced).
+
+=========================================================================
+Advanced HDL Synthesis Report
+
+Macro Statistics
+# Adders/Subtractors                                   : 1
+ 5-bit addsub                                          : 1
+# Counters                                             : 2
+ 20-bit up counter                                     : 2
+# Registers                                            : 9
+ Flip-Flops                                            : 9
+# Comparators                                          : 4
+ 1-bit comparator equal                                : 2
+ 20-bit comparator greater                             : 2
+
+=========================================================================
+
+=========================================================================
+*                         Low Level Synthesis                           *
+=========================================================================
+
+Optimizing unit <adder4> ...
+
+Optimizing unit <debounce_button> ...
+
+Mapping all equations...
+Building and optimizing final netlist ...
+Found area constraint ratio of 100 (+ 5) on block adder4, actual ratio is 0.
+
+Final Macro Processing ...
+
+Processing Unit <adder4> :
+	Found 2-bit shift register for signal <SUB_BUTTON/sync_2>.
+	Found 2-bit shift register for signal <ADD_BUTTON/sync_2>.
+Unit <adder4> processed.
+
+=========================================================================
+Final Register Report
+
+Macro Statistics
+# Registers                                            : 45
+ Flip-Flops                                            : 45
+# Shift Registers                                      : 2
+ 2-bit shift register                                  : 2
+
+=========================================================================
+
+=========================================================================
+*                           Partition Report                            *
+=========================================================================
+
+Partition Implementation Status
+-------------------------------
+
+  No Partitions were found in this design.
+
+-------------------------------
+
+=========================================================================
+*                            Design Summary                             *
+=========================================================================
+
+Top Level Output File Name         : adder4.ngc
+
+Primitive and Black Box Usage:
+------------------------------
+# BELS                             : 189
+#      GND                         : 1
+#      INV                         : 2
+#      LUT1                        : 38
+#      LUT2                        : 45
+#      LUT3                        : 5
+#      LUT4                        : 2
+#      LUT5                        : 4
+#      LUT6                        : 13
+#      MUXCY                       : 38
+#      VCC                         : 1
+#      XORCY                       : 40
+# FlipFlops/Latches                : 47
+#      FD                          : 43
+#      FDE                         : 4
+# Shift Registers                  : 2
+#      SRLC16E                     : 2
+# Clock Buffers                    : 1
+#      BUFGP                       : 1
+# IO Buffers                       : 18
+#      IBUF                        : 10
+#      OBUF                        : 8
+
+Device utilization summary:
+---------------------------
+
+Selected Device : 6slx45csg324-3 
+
+
+Slice Logic Utilization: 
+ Number of Slice Registers:              47  out of  54576     0%  
+ Number of Slice LUTs:                  111  out of  27288     0%  
+    Number used as Logic:               109  out of  27288     0%  
+    Number used as Memory:                2  out of   6408     0%  
+       Number used as SRL:                2
+
+Slice Logic Distribution: 
+ Number of LUT Flip Flop pairs used:    113
+   Number with an unused Flip Flop:      66  out of    113    58%  
+   Number with an unused LUT:             2  out of    113     1%  
+   Number of fully used LUT-FF pairs:    45  out of    113    39%  
+   Number of unique control sets:         4
+
+IO Utilization: 
+ Number of IOs:                          19
+ Number of bonded IOBs:                  19  out of    218     8%  
+
+Specific Feature Utilization:
+ Number of BUFG/BUFGCTRLs:                1  out of     16     6%  
+
+---------------------------
+Partition Resource Summary:
+---------------------------
+
+  No Partitions were found in this design.
+
+---------------------------
+
+
+=========================================================================
+Timing Report
+
+NOTE: THESE TIMING NUMBERS ARE ONLY A SYNTHESIS ESTIMATE.
+      FOR ACCURATE TIMING INFORMATION PLEASE REFER TO THE TRACE REPORT
+      GENERATED AFTER PLACE-and-ROUTE.
+
+Clock Information:
+------------------
+-----------------------------------+------------------------+-------+
+Clock Signal                       | Clock buffer(FF name)  | Load  |
+-----------------------------------+------------------------+-------+
+clk                                | BUFGP                  | 49    |
+-----------------------------------+------------------------+-------+
+
+Asynchronous Control Signals Information:
+----------------------------------------
+No asynchronous control signals found in this design
+
+Timing Summary:
+---------------
+Speed Grade: -3
+
+   Minimum period: 4.589ns (Maximum Frequency: 217.915MHz)
+   Minimum input arrival time before clock: 1.801ns
+   Maximum output required time after clock: 5.883ns
+   Maximum combinational path delay: 6.620ns
+
+Timing Details:
+---------------
+All values displayed in nanoseconds (ns)
+
+=========================================================================
+Timing constraint: Default period analysis for Clock 'clk'
+  Clock period: 4.589ns (frequency: 217.915MHz)
+  Total number of paths / destination ports: 1391 / 49
+-------------------------------------------------------------------------
+Delay:               4.589ns (Levels of Logic = 4)
+  Source:            SUB_BUTTON/counter_7 (FF)
+  Destination:       SUB_BUTTON/counter_0 (FF)
+  Source Clock:      clk rising
+  Destination Clock: clk rising
+
+  Data Path: SUB_BUTTON/counter_7 to SUB_BUTTON/counter_0
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FD:C->Q               2   0.447   0.845  SUB_BUTTON/counter_7 (SUB_BUTTON/counter_7)
+     LUT3:I0->O            1   0.205   0.808  SUB_BUTTON/n000143 (SUB_BUTTON/n000142)
+     LUT6:I3->O            4   0.205   0.684  SUB_BUTTON/n000144 (SUB_BUTTON/n000143)
+     LUT6:I5->O           11   0.205   0.883  SUB_BUTTON/Mcount_counter_val1 (SUB_BUTTON/Mcount_counter_val)
+     LUT2:I1->O            1   0.205   0.000  SUB_BUTTON/counter_0_rstpot (SUB_BUTTON/counter_0_rstpot)
+     FD:D                      0.102          SUB_BUTTON/counter_0
+    ----------------------------------------
+    Total                      4.589ns (1.369ns logic, 3.220ns route)
+                                       (29.8% logic, 70.2% route)
+
+=========================================================================
+Timing constraint: Default OFFSET IN BEFORE for Clock 'clk'
+  Total number of paths / destination ports: 2 / 2
+-------------------------------------------------------------------------
+Offset:              1.801ns (Levels of Logic = 1)
+  Source:            btn_sub (PAD)
+  Destination:       SUB_BUTTON/Mshreg_sync_2 (FF)
+  Destination Clock: clk rising
+
+  Data Path: btn_sub to SUB_BUTTON/Mshreg_sync_2
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     IBUF:I->O             1   1.222   0.579  btn_sub_IBUF (btn_sub_IBUF)
+     SRLC16E:D                -0.060          SUB_BUTTON/Mshreg_sync_2
+    ----------------------------------------
+    Total                      1.801ns (1.222ns logic, 0.579ns route)
+                                       (67.9% logic, 32.1% route)
+
+=========================================================================
+Timing constraint: Default OFFSET OUT AFTER for Clock 'clk'
+  Total number of paths / destination ports: 8 / 4
+-------------------------------------------------------------------------
+Offset:              5.883ns (Levels of Logic = 3)
+  Source:            sub_mode (FF)
+  Destination:       led<4> (PAD)
+  Source Clock:      clk rising
+
+  Data Path: sub_mode to led<4>
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FD:C->Q               8   0.447   1.031  sub_mode (sub_mode)
+     LUT5:I2->O            2   0.205   0.845  Maddsub_result_cy<2>11 (Maddsub_result_cy<2>1)
+     LUT6:I3->O            1   0.205   0.579  Maddsub_result_xor<4>11 (led_4_OBUF)
+     OBUF:I->O                 2.571          led_4_OBUF (led<4>)
+    ----------------------------------------
+    Total                      5.883ns (3.428ns logic, 2.455ns route)
+                                       (58.3% logic, 41.7% route)
+
+=========================================================================
+Timing constraint: Default path analysis
+  Total number of paths / destination ports: 29 / 5
+-------------------------------------------------------------------------
+Delay:               6.620ns (Levels of Logic = 4)
+  Source:            sw<5> (PAD)
+  Destination:       led<4> (PAD)
+
+  Data Path: sw<5> to led<4>
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     IBUF:I->O             3   1.222   0.995  sw_5_IBUF (sw_5_IBUF)
+     LUT5:I0->O            2   0.203   0.845  Maddsub_result_cy<2>11 (Maddsub_result_cy<2>1)
+     LUT6:I3->O            1   0.205   0.579  Maddsub_result_xor<4>11 (led_4_OBUF)
+     OBUF:I->O                 2.571          led_4_OBUF (led<4>)
+    ----------------------------------------
+    Total                      6.620ns (4.201ns logic, 2.419ns route)
+                                       (63.5% logic, 36.5% route)
+
+=========================================================================
+
+Cross Clock Domains Report:
+--------------------------
+
+Clock to Setup on destination clock clk
+---------------+---------+---------+---------+---------+
+               | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
+Source Clock   |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
+---------------+---------+---------+---------+---------+
+clk            |    4.589|         |         |         |
+---------------+---------+---------+---------+---------+
+
+=========================================================================
+
+
+Total REAL time to Xst completion: 3.00 secs
+Total CPU time to Xst completion: 2.46 secs
+ 
+--> 
+
+
+Total memory usage is 375672 kilobytes
+
+Number of errors   :    0 (   0 filtered)
+Number of warnings :    0 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+

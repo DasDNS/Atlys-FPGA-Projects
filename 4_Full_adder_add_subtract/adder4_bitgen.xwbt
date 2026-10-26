@@ -1,0 +1,8 @@
+INTSTYLE=ise
+INFILE=/home/dasuni/Documents/14.7/ISE_DS/full_adder_add_subtract/adder4.ncd
+OUTFILE=/home/dasuni/Documents/14.7/ISE_DS/full_adder_add_subtract/adder4.bit
+FAMILY=Spartan6
+PART=xc6slx45-3csg324
+WORKINGDIR=/home/dasuni/Documents/14.7/ISE_DS/full_adder_add_subtract
+LICENSE=WebPack
+USER_INFO=213639949_0_0_972
