@@ -1,6 +1,6 @@
 # Digilent Atlys FPGA --- Installation, Setup and Programming Guide
 
-Beginner's guide for installing Xilinx ISE Design Suite 14.7 on Ubuntu,
+Beginner's guide for installing Xilinx ISE Design Suite 14.7 on Ubuntu 24.04 LTS,
 creating a Verilog project, generating a bitstream, programming the
 Digilent Atlys Spartan-6 FPGA through JTAG, and testing a 4-bit
 adder/subtractor.
@@ -8,13 +8,13 @@ adder/subtractor.
 > **Board:** Digilent Atlys, Spartan-6 XC6SLX45, CSG324, speed grade -3\
 > **Tools:** Xilinx ISE Design Suite 14.7 WebPACK, Verilog HDL and
 > iMPACT\
-> **Example clock:** 100 MHz (verify against your board revision)\
+> **Example clock:** 100 MHz \
 > **Example project:** 4-bit adder/subtractor with debounced push
 > buttons
 
 This guide consolidates the procedures from the accompanying 4-Bit Full
 Adder - Add and Subtractor guide. It also includes practical notes and
-screenshot placeholders. Replace the example installation paths and
+screenshots. Replace the example installation paths and
 verify pin assignments for your own board.
 
 ## Contents
