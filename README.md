@@ -1,16 +1,11 @@
-# Digilent Atlys FPGA — 4-Bit Full Adder / Subtractor
+# Digilent Atlys FPGA 
 
 **Beginner’s Step-by-Step Guide**  
 **FPGA:** Spartan-6 XC6SLX45 · **Tools:** Xilinx ISE 14.7 WebPACK · iMPACT
 
-> This Markdown file is a text-only conversion of the supplied PDF. Images and screenshots have been omitted. Figure captions and references to screenshots may also be absent where they were embedded as images.
+--------------------------------------------
 
----
-
-DIGILENT ATLYS FPGA
-         4-Bit Full Adder - Add and Subtractor
-
-                    Spartan-6 XC6SLX45 • Xilinx ISE 14.7 WebPACK • iMPACT
+<img width="600" height="600" alt="Picture" src="https://github.com/user-attachments/assets/2984280b-ce56-4fb8-b06c-c2c2d6bade75" />
 
 ## 1. Introduction: The Development Board and Software
 The Digilent Atlys is an FPGA development board built around the Xilinx Spartan-6 LX45 FPGA. An FPGA (Field-
@@ -20,6 +15,8 @@ is configured as hardware and can operate in parallel.
 The Atlys includes eight slide switches, six pushbuttons, eight user LEDs, a 100 MHz clock oscillator, memory,
 Ethernet, HDMI, audio and USB interfaces. This project uses the clock, eight slide switches, two pushbuttons and five
 result LEDs.
+
+<img width="600" height="600" alt="Picture" src="https://github.com/user-attachments/assets/506d1ef0-c215-4edf-abc1-2b2105657fa7" />
 
 ### 1.1 Software
 ·   Xilinx ISE Design Suite 14.7 WebPACK: creates the project, synthesizes and implements the design, and generates
@@ -35,12 +32,40 @@ The steps assume ISE is installed at ~/Documents/14.7/ISE_DS and the environment
 Go to the link: https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/legacy-ise/v2012_4---14_7.html
 (14.7 is the latest software that supports DIGILENT Atyls
 
+<img width="1919" height="895" alt="Picture" src="https://github.com/user-attachments/assets/bed561b1-c5b3-46e6-91fb-384a4bbbe15a" />
+
 Download all the four files.
 Extract the Xilinx_ISE_DS_14.7_1015_1-1.tar and add the .lic license file.
 
+<img width="1073" height="558" alt="Picture" src="https://github.com/user-attachments/assets/45af3c0d-9fcb-46df-b931-2bc306109195" />
+
+<img width="987" height="703" alt="Picture" src="https://github.com/user-attachments/assets/3c2a6fc3-4dc3-4e56-a7e6-99b6baed14de" />
+
+<img width="1149" height="279" alt="Picture" src="https://github.com/user-attachments/assets/ea47cebf-ef64-41eb-a9a6-3f94e350e992" />
+
 The graphical installation wizard should open.
 
+<img width="1140" height="713" alt="Picture" src="https://github.com/user-attachments/assets/ffb7019f-9a09-424c-a714-90290b8d4fc3" />
+
+<img width="1140" height="713" alt="Picture" src="https://github.com/user-attachments/assets/6be97708-6a4e-4517-a43a-4e850949df4b" />
+
+<img width="1140" height="713" alt="Picture" src="https://github.com/user-attachments/assets/56349351-457d-4484-b19a-ee3ee916eb7e" />
+
+<img width="1140" height="713" alt="Picture" src="https://github.com/user-attachments/assets/170ac859-9393-46ac-a698-edd630dd45f9" />
+
+<img width="1140" height="713" alt="Picture" src="https://github.com/user-attachments/assets/2b3593b4-03b8-4340-a6c9-417bec7feaea" />
+
+<img width="977" height="713" alt="Picture" src="https://github.com/user-attachments/assets/cb022f80-1c8c-4129-8fb5-98552ae8ed13" />
+
+<img width="977" height="713" alt="Picture" src="https://github.com/user-attachments/assets/49f1d2a4-b0ec-4bc9-ab69-6e179f970da5" />
+
+<img width="977" height="713" alt="Picture" src="https://github.com/user-attachments/assets/67fe7b96-893a-4b42-8341-1d5eede8423f" />
+
+<img width="977" height="713" alt="Picture" src="https://github.com/user-attachments/assets/c271ac16-3ea1-4382-a980-97b4b0264ae9" />
+
 When installing, if the drive installation failed, follow the steps listed here before using iMPACT.
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/8cc27144-ba95-4b15-a967-f41533511323" />
 
 Power on the Atlys board using the separate power supply and connect its USB programming cable.
 Open up a terminal and run
@@ -207,67 +232,81 @@ If iMPACT still cannot detect the board after the checks above:
     ·   Recheck the USB permissions using the current device path.
 Do not repeatedly retry detection without gathering the new output.
 
-## 2. Intended Program: Calculator Operation
-The design adds or subtracts two unsigned 4-bit operands. SW7–SW4 are operand A and SW3–SW0 are operand B.
-Press BTNC (centre button) to select ADD; press BTNR (right button) to select SUBTRACT. The selected mode stays
-active after release. ADD is selected at startup.
-A clocked mode register remembers the selection. Synchronization, debounce logic and press-pulse generation reduce
-the chance that the mechanical contact bounce of a pushbutton is interpreted as several presses.
-
-## 3. Theory: Binary Arithmetic
-### 3.1 Four-bit numbers
-Each switch represents one bit. ON/high means 1 and OFF/low means 0. Four bits represent 0–15. For example, 0111₂
-= 7 and 0011₂ = 3.
-
-### 3.2 Full-adder logic
-A full adder processes three one-bit inputs: A, B and carry-in (Cin). It produces a sum bit S and carry-out Cout. The
-carry-out feeds the next more-significant stage.
-  S    = A XOR B XOR Cin
-  Cout = (A AND B) OR (A AND Cin) OR (B AND Cin)
-
-FA0 processes bit 0 and begins with Cin = 0. FA1, FA2 and FA3 process higher bits. The final carry C4 is the fifth
-result bit. The current Verilog uses + and - operators; synthesis maps these arithmetic expressions into FPGA logic. The
-diagram explains the underlying binary arithmetic structure.
-
-### 3.3 Example: 7 + 3
-      A = 0111 (7)
-      B = 0011 (3)
-   7 + 3 = 01010 (5-bit result, decimal 10)
-
-The result is binary 01010. LD4 is 0, LD3 is 1, LD2 is 0, LD1 is 1 and LD0 is 0.
-
-### 3.4 Subtraction and two’s complement
-A common digital method computes A − B as A + (~B) + 1. Invert B and add one, then add it to A. The current code
-uses a five-bit subtraction expression, which synthesis implements as FPGA logic.
-
-The largest addition is 15 + 15 = 30 (11110), so five bits are required. Subtraction results range from −15 to +15 and
-are displayed as five-bit two’s complement. LD4 is the sign bit for these subtraction results.
-   7 + 3 = 01010 (10)
-   3 - 7 = 11100 (-4 in 5-bit two's complement)
-   15 + 1 = 10000 (16)
 
 ## 4. Create the ISE Project
 ### Step 1 — Open a terminal and load the ISE environment:
   source ~/Documents/14.7/ISE_DS/settings64.sh
   ise
 
+<img width="1429" height="400" alt="Picture" src="https://github.com/user-attachments/assets/c9b01779-14b1-4a87-8b54-7f6913c26e68" />
+
+<img width="860" height="598" alt="Picture" src="https://github.com/user-attachments/assets/a0b7a5ee-b026-4663-98ff-32bfef96c898" />
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/747db908-6db3-4451-9cb4-20c6ecf02cdb" />
+
 Add the license file when prompted.
 
+<img width="1279" height="960" alt="Picture" src="https://github.com/user-attachments/assets/2219e233-206d-4113-8a04-4d22ca294970" />
+
+<img width="814" height="786" alt="Picture" src="https://github.com/user-attachments/assets/b860c5f0-2d67-4a74-b1b4-b093704096fc" />
+
+<img width="504" height="486" alt="Picture" src="https://github.com/user-attachments/assets/8f3a2ab5-b356-486c-a295-9dda8ca32e7c" />
+
+<img width="1254" height="931" alt="Picture" src="https://github.com/user-attachments/assets/0e1db4b0-f8fa-4c0c-bf3c-d829e94a0b51" />
+
 ### Step 2 — In ISE, choose File → New Project.
+
+<img width="1279" height="720" alt="Picture" src="https://github.com/user-attachments/assets/f2656c0a-b10c-4a3e-a3c1-e8b5a1edfd38" />
 
 ### Step 3 — Name the project Atlys_Adder_Subtractor. Choose an easy-to-find folder, for example
 ~/Documents/FPGA/Atlys_Adder_Subtractor, and click Next.
 
+<img width="641" height="711" alt="Picture" src="https://github.com/user-attachments/assets/443637f1-1816-4fc6-838d-53ecff603277" />
+
+<img width="641" height="711" alt="Picture" src="https://github.com/user-attachments/assets/5177f787-aa0d-4b3e-9b56-50204b8e625a" />
+
 ### Step 4 — Choose Family Spartan6, Device XC6SLX45, Package CSG324 and Speed -3. Select ISE WebPACK design
 flow if prompted. Click Next.
 
+<img width="916" height="867" alt="Picture" src="https://github.com/user-attachments/assets/6996294a-541b-44ca-9888-0f8039833e84" />
+
 ### Step 5 — Choose Verilog as the preferred HDL, continue through the wizard and click Finish.
+
+<img width="916" height="867" alt="Picture" src="https://github.com/user-attachments/assets/af5dd402-55aa-4e54-a08b-be088fc11ca9" />
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/f3fd714e-ce8c-435b-ad13-9ec286bb9556" />
 
 ### Step 6 — Choose Project → New Source, select Verilog Module, name it adder4, then finish the wizard.
 
+<img width="1279" height="960" alt="Picture" src="https://github.com/user-attachments/assets/7c5e901c-771f-4dcf-8d7c-9e3c4399a377" />
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/4ce8d523-e0b3-4d24-bf7a-46df21eab574" />
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/37bcd628-e43f-4165-a1a6-45bcc6016e1c" />
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/2d972cf7-e6b6-4440-bdfd-f062417d5e0f" />
+
 ### Step 7 — Open adder4.v, replace its contents with the code in Section 5, and save.
 
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/4e857fb7-a081-474e-9905-50e947956ddf" />
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/3d6d33bb-d938-4e72-a669-4775c40d1748" />
+
 ### Step 8 — Create or add a UCF file named adder4.ucf and paste the constraints in Section 6.
+
+<img width="1279" height="960" alt="Picture" src="https://github.com/user-attachments/assets/30277845-ee7c-489f-9965-8b65d0fbdb5e" />
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/135d1e36-a847-4261-8e58-c2d7a8fb2fc2" />
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/5eccd05d-53b8-4373-ad53-84d79475f05e" />
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/9b2d7ffc-9d54-4900-b21e-ed9d0190f0f6" />
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/0ab32b48-95cc-4025-8659-2bd8580b5d57" />
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/11c47232-dd1e-40a8-8ba9-5262a4b8ddc3" />
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/430c7ffa-6f6e-4e3f-978b-7d420fb66047" />
 
 ### Step 9 — Confirm adder4 is the top module. If needed, right-click it in the Hierarchy pane and choose Set as Top
 Module.
@@ -387,11 +426,27 @@ attributes are the actual constraints.
 ## 7. Synthesize, Implement and Generate the Bitstream
 ### Step 1 — In the Processes pane, double-click Synthesize - XST and wait for completion.
 
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/c185204f-30ad-43a6-a2ec-71fcd45413ee" />
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/826bb81f-630d-49b3-a262-a32a204993e1" />
+
 ### Step 2 — If synthesis completes, double-click Implement Design.
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/ba155e99-350a-4195-9070-6002c6f96d52" />
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/55ca5450-1cde-4e92-b00d-c488a891bb69" />
 
 ### Step 3 — If implementation completes, double-click Generate Programming File.
 
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/c4412092-a359-46c7-8f81-602cc9f56c3c" />
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/86a85cff-3ca4-4daf-9262-41a1a4ed95aa" />
+
 ### Step 4 — Confirm that adder4.bit is created in the project's implementation directory.
+
+<img width="1917" height="740" alt="Picture" src="https://github.com/user-attachments/assets/84ea0db5-f4c2-4da4-beb1-4f681d970a12" />
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/4cc9f3dd-0004-4e56-83e7-ede29e9a86ca" />
 
 ### Step 5 — A Place:838 mixed-I/O-standard warning can appear because the LED bus intentionally contains
 LVCMOS25 and LVCMOS33 signals. The warning alone does not prove the arithmetic failed.
@@ -402,17 +457,37 @@ LVCMOS25 and LVCMOS33 signals. The warning alone does not prove the arithmetic f
 ### Step 2 — In ISE, run Configure Target Device (iMPACT), or launch impact from a terminal after sourcing
 settings64.sh.
 
+<img width="1337" height="440" alt="Picture" src="https://github.com/user-attachments/assets/1baa5252-cba7-48a4-b775-4d0961833b00" />
+
 ### Step 3 — Create an iMPACT project if prompted and select Boundary Scan.
+
+<img width="1026" height="805" alt="Picture" src="https://github.com/user-attachments/assets/6f30c28b-77c1-4517-ae8d-abeac685bba7" />
 
 ### Step 4 — Right-click in the Boundary Scan area and choose Initialize Chain. The FPGA should be detected as
 xc6slx45.
 
+<img width="1026" height="805" alt="Picture" src="https://github.com/user-attachments/assets/0571487a-6ba6-4b17-b133-83c1f459d71a" />
+
+<img width="1026" height="805" alt="Picture" src="https://github.com/user-attachments/assets/7a5f6877-efa5-43f3-8d83-cdf7c2d5799b" />
+
 ### Step 5 — When prompted to assign a configuration file, select the generated adder4.bit by clicking ‘Open’ button and
 then when prompted to upload the .bit to flash PROM, press NO.
 
+<img width="1026" height="805" alt="Picture" src="https://github.com/user-attachments/assets/4985c9f9-9357-4847-8f02-b2926b0d2ede" />
+
+<img width="1026" height="805" alt="Picture" src="https://github.com/user-attachments/assets/643eadf2-b775-4324-b0b5-5fda8a5e7fae" />
+
+<img width="1026" height="805" alt="Picture" src="https://github.com/user-attachments/assets/75761492-3167-4507-bb88-7ede1fccb008" />
+
 ### Step 6 — Assign the bitstream to the xc6slx45 device.
 
+<img width="1026" height="805" alt="Picture" src="https://github.com/user-attachments/assets/4cef2579-a739-465a-8dab-6e779bab4529" />
+
+<img width="1026" height="805" alt="Picture" src="https://github.com/user-attachments/assets/dda4b8e1-28dd-4479-90d5-c72eedac6801" />
+
 ### Step 7 — Right-click the FPGA and select Program. Wait for the success message.
+
+<img width="1026" height="805" alt="Picture" src="https://github.com/user-attachments/assets/a86fcb13-fdd6-4fd1-bee5-64b7d10cfc33" />
 
 ### Step 8 — Follow the tests in Section 9.
 JTAG-loaded configuration is volatile. After removing board power, program the .bit file again unless you separately
@@ -466,8 +541,6 @@ Wrong numerical result: Check switch order, selected operation, and read LD4 as 
     dresden.de/wiki/Atlys_rm1f5c.pdf?fileId=448
 ·   User Constraints File for the Digilent Atlys board, Rev. C: https://github.com/alexforencich/verilog-
     uart/blob/master/example/ATLYS/fpga/fpga.ucf
-
-·   ChatGPT link: https://chatgpt.com/share/6acf2123-45a0-83e8-ac6b-4410a6652b7c
 
 Learning note: the full-adder diagram explains the arithmetic structure. The supplied Verilog uses the + and - operators,
 which synthesis maps into FPGA logic.
