@@ -4,10 +4,6 @@
 **FPGA:** Spartan-6 XC6SLX45 · **Tools:** Xilinx ISE Design Suite 14.7
 WebPACK · iMPACT
 
-> This is a text-only guide. Images and screenshots from the source
-> material are not included. Figure captions or screenshot references
-> may therefore be absent where they were embedded as images.
-
 ------------------------------------------------------------------------
 
 # 1. Introduction
@@ -33,33 +29,6 @@ The Atlys includes:
 
 This project uses the clock, eight slide switches, two pushbuttons and
 five result LEDs.
-
-## 1.2 Project overview
-
-The design adds or subtracts two unsigned 4-bit operands.
-
--   **Operand A:** SW7--SW4
--   **Operand B:** SW3--SW0
--   **ADD selection:** BTNC (centre button), mapped in the supplied UCF
-    to F5
--   **SUBTRACT selection:** BTNR (right button), mapped in the supplied
-    UCF to F6
--   **Clock:** L15, assumed to be 100 MHz
--   **Result:** LD4--LD0
--   **Unused LEDs:** LD7--LD5 are held LOW
-
-Press BTNC to select ADD. Press BTNR to select SUBTRACT. The selected
-mode stays active after the button is released. ADD is selected at
-startup.
-
-A clocked mode register remembers the selection. Synchronisation,
-debounce logic and press-pulse generation reduce the chance that
-mechanical contact bounce is interpreted as several presses.
-
-> **Board verification:** The button names and pin assignments are
-> assumptions from the supplied guide and UCF. Confirm BTNC/F5, BTNR/F6,
-> the clock on L15, and button polarity against your board revision and
-> a known-working project before relying on them.
 
 # 2. Hardware and Software Requirements
 
