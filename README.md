@@ -4,7 +4,7 @@
 **FPGA:** Spartan-6 XC6SLX45 · 
 **Software Tools:** Xilinx ISE 14.7 WebPACK · iMPACT
 
---------------------------------------------
+---------------------------------------------------------------------------------------------------
 
 <img width="600" height="600" alt="Picture" src="https://github.com/user-attachments/assets/2984280b-ce56-4fb8-b06c-c2c2d6bade75" />
 
@@ -13,6 +13,7 @@ The Digilent Atlys is an FPGA development board built around the Xilinx Spartan-
 Programmable Gate Array) is a digital logic device whose internal logic and connections can be configured by loading
 a design. Unlike a microcontroller program that normally executes instructions sequentially on a processor, FPGA logic
 is configured as hardware and can operate in parallel.
+</br></br>
 The Atlys includes eight slide switches, six pushbuttons, eight user LEDs, a 100 MHz clock oscillator, memory,
 Ethernet, HDMI, audio and USB interfaces. This project uses the clock, eight slide switches, two pushbuttons and five
 result LEDs.
@@ -22,7 +23,7 @@ result LEDs.
 ## 2. About This Repository and How to Use This Guide
 
 This repository is intended to help you set up the Digilent Atlys FPGA development environment, install and configure the required software, create an FPGA project in Xilinx ISE, generate a programming bitstream, and load that bitstream onto the board.
-
+</br> </br>
 It is organised as a general setup and workflow guide together with separate folders for individual FPGA projects. The general guide explains the common process. Each project folder contains its own README with the project-specific Verilog explanation, design details, pin assignments, and testing information.
 
 ### 2.1 Repository contents
@@ -351,7 +352,7 @@ flow if prompted. Click Next.
 
 <img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/2d972cf7-e6b6-4440-bdfd-f062417d5e0f" />
 
-### Step 7 — Open adder4.v, replace its contents with the verilog code.
+### Step 7 — Open 'file_name'.v, replace its contents with the verilog code.
 
 <img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/4e857fb7-a081-474e-9905-50e947956ddf" />
 
@@ -497,10 +498,10 @@ A bitstream loaded through JTAG configures the FPGA's volatile configuration mem
 The USB/JTAG troubleshooting procedure in Section 4 also covers USB detection, udev permissions, Adept libraries, plugin dependencies and the `windrvr6` warning.
 
 ## 12. References
-·   Digilent Atlys official reference page: https://digilent.com/reference/programmable-logic/atlys/reference-manual
+·   Digilent Atlys official reference page: https://digilent.com/reference/programmable-logic/atlys/reference-manual </br>
 ·   Digilent Atlys Reference Manual (2013): https://wwwpub.zih.tu-dresden.de/~ss17/wiki/www.mr.inf.tu-
-    dresden.de/wiki/Atlys_rm1f5c.pdf?fileId=448
+    dresden.de/wiki/Atlys_rm1f5c.pdf?fileId=448 </br>
 ·   Digilent Atlys Reference Manual (2018): https://wwwpub.zih.tu-dresden.de/~ss17/wiki/www.mr.inf.tu-
-    dresden.de/wiki/Atlys_rm1f5c.pdf?fileId=448
+    dresden.de/wiki/Atlys_rm1f5c.pdf?fileId=448 </br>
 ·   User Constraints File for the Digilent Atlys board, Rev. C: https://github.com/alexforencich/verilog-
-    uart/blob/master/example/ATLYS/fpga/fpga.ucf
+    uart/blob/master/example/ATLYS/fpga/fpga.ucf </br>
