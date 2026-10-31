@@ -80,7 +80,7 @@ https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/legacy-ise/v201
 
 ISE 14.7 is the version used for this Spartan-6 project.
 
-<img width="672" height="314" alt="Picture" src="https://github.com/user-attachments/assets/a9f22379-e681-44f0-ba42-85641e5d2655" />
+<img width="1919" height="895" alt="Picture" src="https://github.com/user-attachments/assets/81e4f822-0ff4-461f-89db-42de85124a7c" />
 
 Download all four files provided for the installation.
 
