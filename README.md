@@ -1,7 +1,8 @@
 # Digilent Atlys FPGA 
 
 **Beginner’s Step-by-Step Guide**  
-**FPGA:** Spartan-6 XC6SLX45 · **Tools:** Xilinx ISE 14.7 WebPACK · iMPACT
+**FPGA:** Spartan-6 XC6SLX45 · 
+**Software Tools:** Xilinx ISE 14.7 WebPACK · iMPACT
 
 --------------------------------------------
 
@@ -30,6 +31,7 @@ The steps assume ISE is installed at ~/Documents/14.7/ISE_DS and the environment
 
 ### How to install the software?
 Go to the link: https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/legacy-ise/v2012_4---14_7.html
+
 (14.7 is the latest software that supports DIGILENT Atyls
 
 <img width="1919" height="895" alt="Picture" src="https://github.com/user-attachments/assets/bed561b1-c5b3-46e6-91fb-384a4bbbe15a" />
