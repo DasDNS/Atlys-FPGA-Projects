@@ -1,4 +1,4 @@
-# Digilent Atlys FPGA --- 4-Bit Full Adder / Subtractor
+# Digilent Atlys FPGA Guide
 
 **Beginner's Step-by-Step Guide**\
 **FPGA:** Spartan-6 XC6SLX45 · **Tools:** Xilinx ISE Design Suite 14.7
@@ -27,8 +27,7 @@ The Atlys includes:
 -   A 100 MHz clock oscillator
 -   Memory, Ethernet, HDMI, audio and USB interfaces
 
-This project uses the clock, eight slide switches, two pushbuttons and
-five result LEDs.
+<img width="600" height="600" alt="Picture" src="https://github.com/user-attachments/assets/c3a85463-1131-4c70-9bd1-c83c989ec837" />
 
 # 2. Hardware and Software Requirements
 
@@ -43,6 +42,8 @@ five result LEDs.
 -   Board power supply
 -   Digilent USB programming cable connected to the board's Adept/JTAG
     USB port
+
+<img width="567" height="567" alt="Picture" src="https://github.com/user-attachments/assets/49308f2b-3f5c-4fc5-9350-0ac6449a1a21" />
 
 ## 2.2 Software
 
@@ -78,6 +79,8 @@ Go to the Xilinx/AMD ISE 14.7 download page:
 https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/legacy-ise/v2012_4---14_7.html
 
 ISE 14.7 is the version used for this Spartan-6 project.
+
+<img width="672" height="314" alt="Picture" src="https://github.com/user-attachments/assets/a9f22379-e681-44f0-ba42-85641e5d2655" />
 
 Download all four files provided for the installation.
 
