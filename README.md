@@ -1,305 +1,240 @@
-# Digilent Atlys FPGA --- Installation, Setup and Programming Guide
+# Digilent Atlys FPGA --- 4-Bit Full Adder / Subtractor
 
-Beginner's guide for installing Xilinx ISE Design Suite 14.7 on Ubuntu 24.04 LTS,
-creating a Verilog project, generating a bitstream, programming the
-Digilent Atlys Spartan-6 FPGA through JTAG, and testing a 4-bit
-adder/subtractor.
+**Beginner's Step-by-Step Guide**\
+**FPGA:** Spartan-6 XC6SLX45 · **Tools:** Xilinx ISE Design Suite 14.7
+WebPACK · iMPACT
 
-> **Board:** Digilent Atlys, Spartan-6 XC6SLX45, CSG324, speed grade -3\
-> **Tools:** Xilinx ISE Design Suite 14.7 WebPACK, Verilog HDL and
-> iMPACT\
-> **Example clock:** 100 MHz \
-> **Example project:** 4-bit adder/subtractor with debounced push
-> buttons
-
-This guide consolidates the procedures from the accompanying 4-Bit Full
-Adder - Add and Subtractor guide. It also includes practical notes and
-screenshots. Replace the example installation paths and
-verify pin assignments for your own board.
-
-## Contents
-
-1.  Introduction and requirements
-2.  Download and install ISE 14.7
-3.  Load the ISE environment
-4.  Connect the board and check USB detection
-5.  Configure USB permissions
-6.  Check Digilent Adept libraries and plugin
-7.  Troubleshoot iMPACT
-8.  Understand the example design
-9.  Create an ISE project
-10. Add Verilog and UCF files
-11. Synthesis, implementation and bitstream generation
-12. Program the FPGA
-13. Operate and test the design
-14. Troubleshooting
-15. References
+> This is a text-only guide. Images and screenshots from the source
+> material are not included. Figure captions or screenshot references
+> may therefore be absent where they were embedded as images.
 
 ------------------------------------------------------------------------
 
-## 1. Introduction and requirements
+# 1. Introduction
 
-The Digilent Atlys is an FPGA development board based on the Xilinx
-Spartan-6 LX45. An FPGA is configured as digital hardware; unlike a
-typical microcontroller program, FPGA logic can operate in parallel.
+## 1.1 About the Digilent Atlys FPGA board
 
-The Atlys provides slide switches, push buttons, LEDs, a 100 MHz
-oscillator, memory, Ethernet, HDMI, audio and USB interfaces. The
-example project uses eight switches, two push buttons, the clock and
+The Digilent Atlys is an FPGA development board built around the Xilinx
+Spartan-6 LX45 FPGA.
+
+An FPGA (Field-Programmable Gate Array) is a digital logic device whose
+internal logic and connections can be configured by loading a design.
+Unlike a microcontroller program that normally executes instructions
+sequentially on a processor, FPGA logic is configured as hardware and
+can operate in parallel.
+
+The Atlys includes:
+
+-   Eight slide switches
+-   Six pushbuttons
+-   Eight user LEDs
+-   A 100 MHz clock oscillator
+-   Memory, Ethernet, HDMI, audio and USB interfaces
+
+This project uses the clock, eight slide switches, two pushbuttons and
 five result LEDs.
 
-### Hardware
+## 1.2 Project overview
 
--   Digilent Atlys FPGA board
--   Atlys power supply
--   USB cable connected to the Digilent Adept/JTAG programming port
--   Ubuntu computer
+The design adds or subtracts two unsigned 4-bit operands.
 
-### Software
+-   **Operand A:** SW7--SW4
+-   **Operand B:** SW3--SW0
+-   **ADD selection:** BTNC (centre button), mapped in the supplied UCF
+    to F5
+-   **SUBTRACT selection:** BTNR (right button), mapped in the supplied
+    UCF to F6
+-   **Clock:** L15, assumed to be 100 MHz
+-   **Result:** LD4--LD0
+-   **Unused LEDs:** LD7--LD5 are held LOW
 
-  -----------------------------------------------------------------------
-  Software                            Purpose
-  ----------------------------------- -----------------------------------
-  Xilinx ISE Design Suite 14.7        Project creation, synthesis,
-  WebPACK                             implementation and bitstream
-                                      generation
+Press BTNC to select ADD. Press BTNR to select SUBTRACT. The selected
+mode stays active after the button is released. ADD is selected at
+startup.
 
-  Verilog HDL                         Hardware description language
+A clocked mode register remembers the selection. Synchronisation,
+debounce logic and press-pulse generation reduce the chance that
+mechanical contact bounce is interpreted as several presses.
 
-  UCF                                 Physical FPGA pin and I/O-standard
-                                      constraints
+> **Board verification:** The button names and pin assignments are
+> assumptions from the supplied guide and UCF. Confirm BTNC/F5, BTNR/F6,
+> the clock on L15, and button polarity against your board revision and
+> a known-working project before relying on them.
 
-  iMPACT                              JTAG chain detection and FPGA
-                                      programming
-  -----------------------------------------------------------------------
+# 2. Hardware and Software Requirements
 
-**ISE device settings**
+## 2.1 Hardware
 
-  Property        Value
-  --------------- -------------
-  Family          Spartan6
-  Device          XC6SLX45
-  Package         CSG324
-  Speed grade     -3
-  Design flow     ISE WebPACK
-  Preferred HDL   Verilog
+-   Digilent Atlys FPGA development board
+-   Xilinx Spartan-6 XC6SLX45 FPGA
+-   Eight slide switches
+-   Two pushbuttons
+-   Eight user LEDs
+-   100 MHz clock source
+-   Board power supply
+-   Digilent USB programming cable connected to the board's Adept/JTAG
+    USB port
 
-ISE 14.7 is a legacy toolchain for devices such as Spartan-6.
-Installation and cable-driver behaviour can vary between Ubuntu
-releases.
+## 2.2 Software
 
-**\[SCREENSHOT PLACEHOLDER --- Atlys board overview\]**
+-   **Xilinx ISE Design Suite 14.7 WebPACK:** Creates the project,
+    synthesizes and implements the design, and generates the `.bit`
+    file.
+-   **Verilog HDL:** Describes the calculator logic.
+-   **UCF (User Constraints File):** Maps Verilog signals to physical
+    FPGA pins and sets I/O electrical standards.
+-   **iMPACT:** Detects the FPGA through JTAG and loads the `.bit` file.
 
-`images/atlys-board-overview.png`
-
-## 2. Download and install Xilinx ISE 14.7
-
-### 2.1 Download
-
-1.  Open the official AMD legacy ISE download page:\
-    <https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/legacy-ise/v2012_4---14_7.html>
-2.  Locate ISE Design Suite 14.7.
-3.  Download the required installation files. The original setup used
-    four files.
-4.  Extract the main archive, named similar to
-    `Xilinx_ISE_DS_14.7_1015_1-1.tar`.
-5.  Keep the required `.lic` license file available.
-
-The download page and package layout may change. Follow AMD's current
-instructions and use the package intended for your host system.
-
-**\[SCREENSHOT PLACEHOLDER --- AMD download page\]**
-
-`images/ise-download-page.png`
-
-**\[SCREENSHOT PLACEHOLDER --- Downloaded and extracted installer
-files\]**
-
-`images/ise-downloaded-files.png`
-
-### 2.2 Install
-
-1.  Open a terminal in the extracted installer directory.
-2.  Locate and launch the installer executable or setup script included
-    in the package, following its instructions.
-3.  If the graphical installer does not open, inspect the terminal
-    output for missing libraries or permission errors.
-4.  Follow the installation wizard.
-5.  Select the ISE design tools needed for Spartan-6 development,
-    including iMPACT.
-6.  Install Digilent/Adept components if offered.
-7.  Complete installation and note the installation directory.
-8.  Apply the license file if requested, using the license supplied for
-    your installation.
-
-The example installation path used throughout this guide is:
+The steps in this guide assume ISE is installed at:
 
 ``` bash
 ~/Documents/14.7/ISE_DS
 ```
 
-The environment script is:
+The environment script is assumed to be:
 
 ``` bash
 ~/Documents/14.7/ISE_DS/settings64.sh
 ```
 
-Your paths may differ.
+If your installation is in a different directory, use your actual
+installation path in the commands.
 
-**\[SCREENSHOT PLACEHOLDER --- Installer wizard\]**
+# 3. Install Xilinx ISE 14.7
 
-`images/ise-install-wizard.png`
+## 3.1 Download the software
 
-**\[SCREENSHOT PLACEHOLDER --- Component selection\]**
+Go to the Xilinx/AMD ISE 14.7 download page:
 
-`images/ise-install-components.png`
+https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/legacy-ise/v2012_4---14_7.html
 
-**\[SCREENSHOT PLACEHOLDER --- License setup, if shown\]**
+ISE 14.7 is the version used for this Spartan-6 project.
 
-`images/ise-license-setup.png`
+Download all four files provided for the installation.
 
-**\[SCREENSHOT PLACEHOLDER --- Installation completed\]**
+## 3.2 Extract and install
 
-`images/ise-install-complete.png`
+1.  Extract `Xilinx_ISE_DS_14.7_1015_1-1.tar`.
+2.  Add the `.lic` license file as required by the installation.
+3.  Start the graphical installation wizard.
+4.  Follow the installation steps.
 
-If the legacy cable-driver installation fails, do not immediately assume
-JTAG programming is impossible. Continue with the Digilent USB/Adept
-checks below. Retain installer error messages for troubleshooting.
+If the Digilent programming driver or runtime installation fails, follow
+the USB and Adept troubleshooting procedure in the next section before
+using iMPACT.
 
-## 3. Load the ISE environment
+## 3.3 Load the ISE environment
 
-ISE tools need environment variables configured by `settings64.sh`.
-
-For the example path:
+Open a terminal and run:
 
 ``` bash
-source "$HOME/Documents/14.7/ISE_DS/settings64.sh"
+source ~/Documents/14.7/ISE_DS/settings64.sh
 ```
 
-Start Project Navigator:
+To launch ISE from the terminal:
 
 ``` bash
 ise
 ```
 
-Start iMPACT:
+Add the license file when prompted.
 
-``` bash
-impact
-```
+# 4. Set Up Digilent USB/JTAG Support on Ubuntu
 
-If you do not know where ISE was installed, locate the environment
-script:
+This section covers the USB detection and Digilent Adept checks used
+when iMPACT cannot detect the Atlys board. Perform these checks before
+repeatedly retrying JTAG detection.
 
-``` bash
-find "$HOME" /opt /usr/local \
-  -type f -name 'settings64.sh' 2>/dev/null
-```
+## 4.1 Connect the board and check USB detection
 
-Use the actual path returned by the command.
-
-**\[SCREENSHOT PLACEHOLDER --- Terminal with environment loaded\]**
-
-`images/ise-environment-terminal.png`
-
-**\[SCREENSHOT PLACEHOLDER --- ISE Project Navigator\]**
-
-`images/ise-project-navigator.png`
-
-## 4. Connect the Atlys and check USB detection
-
-1.  Power the Atlys board using its separate power supply.
-2.  Connect the USB programming cable to the Digilent Adept/JTAG USB
-    connector.
-3.  Open a normal terminal and run:
+1.  Power on the Atlys board using its separate power supply.
+2.  Connect its USB programming cable.
+3.  Open a normal terminal.
+4.  Run:
 
 ``` bash
 lsusb
 ```
 
-The previous setup detected an entry similar to:
+If the board is connected and detected, you may see output similar to:
 
 ``` text
 Bus 001 Device 009: ID 1443:0007 Digilent Development board JTAG
 ```
 
-Bus and device numbers are examples and change when devices reconnect.
-Filter by the observed vendor/product ID:
+The bus and device numbers (`001` and `009` here) are examples only.
+They may differ on your computer or after reconnecting the board.
+`1443:0007` is the USB vendor ID and product ID observed for the
+Digilent development board in the original setup; it may differ for
+another device or board revision.
+
+Now check specifically for that ID:
 
 ``` bash
 lsusb -d 1443:0007
 ```
 
-Example:
+Expected output resembles:
 
 ``` text
 Bus 001 Device 007: ID 1443:0007 Digilent Development board JTAG
 ```
 
-If no device appears, check board power, cable, USB connector and
-computer port. Run this initial check before sourcing the ISE
-environment.
+-   If the board appears, continue to the next step.
+-   If nothing appears, check the USB cable, board power, USB port and
+    physical connection first.
 
-`1443:0007` is the ID observed in the documented setup. If your board
-reports a different ID, investigate the detected entry rather than
-assuming this ID must apply.
+**Important:** Run this check in a normal terminal before sourcing the
+ISE environment.
 
-**\[SCREENSHOT PLACEHOLDER --- lsusb showing Digilent JTAG board\]**
+## 4.2 Check the Digilent USB permissions rule
 
-`images/lsusb-atlys-detected.png`
-
-## 5. Configure Digilent USB permissions
-
-The udev rule used in the previous setup was:
-
-``` text
-/etc/udev/rules.d/52-digilent-usb.rules
-```
-
-Check whether it exists:
+Run:
 
 ``` bash
 ls -l /etc/udev/rules.d/52-digilent-usb.rules
 ```
 
-If missing, search the installation:
+If the file exists, continue to the next step.
+
+If it reports `No such file or directory`, locate the rule file included
+with the Digilent installation:
 
 ``` bash
 find "$HOME" /opt /usr/local \
-  -type f -name '52-digilent-usb.rules' 2>/dev/null
+     -type f -name '52-digilent-usb.rules' 2>/dev/null
 ```
 
-If found, copy it using the actual path returned by `find`. An example
-path from the previous installation is:
+If this finds a file, use its actual path in the following commands. For
+example, if it is found at the location used on the previous laptop:
 
 ``` bash
 sudo cp \
-  "$HOME/Documents/14.7/ISE_DS/ISE/bin/lin64/digilent/digilent.adept.runtime_2.13.1-x86_64/52-digilent-usb.rules" \
-  /etc/udev/rules.d/52-digilent-usb.rules
-```
+"$HOME/Documents/14.7/ISE_DS/ISE/bin/lin64/digilent/digilent.adept.runtime_2.13.1-x86_64/52-digilent-usb.rules" \
+/etc/udev/rules.d/52-digilent-usb.rules
 
-Do not blindly use this example if your installation directory or Adept
-runtime version differs. If `find` returns no result, investigate the
-Adept installation instead of creating an empty rule.
-
-Set permissions and reload the rules:
-
-``` bash
 sudo chmod 644 /etc/udev/rules.d/52-digilent-usb.rules
 sudo udevadm control --reload-rules
 ```
 
-Unplug the programming cable, wait a few seconds, and reconnect it. Then
-check detection again:
+Do not blindly copy that example path if ISE is installed elsewhere.
+
+If `find` does not locate the file, stop and investigate the Digilent
+installation instead of creating an empty rule.
+
+## 4.3 Reconnect the board and check permissions
+
+Unplug the programming USB cable, wait a few seconds, and reconnect it.
+
+Run:
 
 ``` bash
 lsusb -d 1443:0007
 ```
 
-### Check the current USB device permissions
-
-Bus and device numbers change. This command discovers the current device
-node:
+Read the current bus and device numbers. You can also use this command
+to find the device path automatically, so you do not have to type the
+changing numbers:
 
 ``` bash
 device_path=$(lsusb -d 1443:0007 | awk 'NR==1 {printf "/dev/bus/usb/%s/%s", $2, substr($4,1,3)}')
@@ -311,61 +246,75 @@ else
 fi
 ```
 
-The previous computer showed permissions similar to:
+An example of the permissions observed on the previous laptop was:
 
 ``` text
 crw-rw-rw- 1 root root ... /dev/bus/usb/001/009
 ```
 
-If your permissions differ, check the udev rule and reload procedure. Do
-not use broad permission changes such as `chmod 777` as a quick fix.
+This means the device had read/write permissions for all users.
 
-**\[SCREENSHOT PLACEHOLDER --- udev rule file\]**
+If your new laptop shows different permissions, do not immediately
+change them to `777` or make other broad permission changes. Check
+whether the udev rule matches the connected device and whether it was
+reloaded.
 
-`images/digilent-udev-rule.png`
+## 4.4 Check the Digilent Adept runtime libraries
 
-**\[SCREENSHOT PLACEHOLDER --- USB device permissions\]**
-
-`images/atlys-usb-permissions.png`
-
-## 6. Check Digilent Adept libraries and the ISE plugin
-
-If `lsusb` detects the board but iMPACT cannot initialise the JTAG
-chain, inspect the runtime libraries and plugin.
-
-### 6.1 Adept runtime directory
+Run:
 
 ``` bash
 ls -l /usr/local/lib64/digilent/adept/
 ```
 
-The previous setup contained libraries including `libdjtg.so.2.10.1`.
-Exact names and locations can differ.
-
-Check the driver utility:
+Then:
 
 ``` bash
 ls -l /usr/local/sbin/dftdrvdtch
 ```
 
-Check the dynamic linker cache:
+Then:
 
 ``` bash
 ldconfig -p | grep -E 'libdjtg|libusb-1.0'
 ```
 
-The previous setup initially showed `libusb-1.0` but did not show
-`libdjtg` in the linker cache.
+On the previous laptop, the Adept directory contained
+`libdjtg.so.2.10.1` and other Digilent libraries. The `dftdrvdtch`
+utility and `libusb-1.0` were also present.
 
-### 6.2 Register the Adept library directory
+However, `libdjtg` did not initially appear in the dynamic linker cache.
+That led to the next step.
 
-First verify that the library exists:
+If these files or directories are missing on another computer, do not
+assume the next command will fix everything. First confirm whether the
+Digilent Adept runtime was installed successfully.
+
+## 4.5 Check for Digilent command-line utilities
+
+Run:
+
+``` bash
+find /usr/local /opt "$HOME" \
+  -type f \( -name 'djtgcfg' -o -name 'dadutil' \) 2>/dev/null
+```
+
+On the previous laptop, this returned no results. That alone does not
+prove the Adept runtime is broken, so continue with the next step.
+
+## 4.6 Register the Digilent Adept library directory
+
+This was the most promising fix from the previous troubleshooting
+session.
+
+First, verify that the directory contains the library:
 
 ``` bash
 ls -l /usr/local/lib64/digilent/adept/libdjtg.so*
 ```
 
-If it exists in that directory, register the directory:
+If the library exists in that directory, register it with Linux's
+dynamic linker:
 
 ``` bash
 echo '/usr/local/lib64/digilent/adept' | \
@@ -374,69 +323,61 @@ echo '/usr/local/lib64/digilent/adept' | \
 sudo ldconfig
 ```
 
-Check:
+Now check whether the library appears in the linker cache:
 
 ``` bash
 ldconfig -p | grep libdjtg
 ```
 
 You should see an entry referring to `libdjtg.so.2` or the installed
-version. If the library is elsewhere, use its actual directory. Do not
-register a directory that does not contain the library.
+version in the Adept directory.
 
-### 6.3 Search for Adept command-line tools
+If the library is installed somewhere else, use its actual directory
+instead. If it is missing, do not register a directory that does not
+contain it.
 
-``` bash
-find /usr/local /opt "$HOME" \
-  -type f \( -name 'djtgcfg' -o -name 'dadutil' \) 2>/dev/null
-```
+## 4.7 Check the ISE Digilent plugin
 
-The previous computer returned no results. This alone does not prove the
-runtime is broken.
-
-### 6.4 Check the ISE Digilent plugin
-
-The previous installation used:
+On the previous laptop, the plugin location was checked with:
 
 ``` bash
 ls -l "$HOME/.cse/lin64/14.1/plugins/Digilent/libCseDigilent/"
 ```
 
-Check dependencies:
+Then missing library dependencies were checked with:
 
 ``` bash
 ldd "$HOME/.cse/lin64/14.1/plugins/Digilent/libCseDigilent/libCseDigilent.so" \
   | grep 'not found'
 ```
 
-If this prints nothing, no missing dependencies were reported by that
-check.
+If the second command prints nothing, it found no missing dependencies
+in that check.
 
-If the directory does not exist, locate the plugin:
+If the directory does not exist, do not assume the installation is
+broken. The location may differ on another laptop. Locate the plugin
+with:
 
 ``` bash
 find "$HOME" /opt /usr/local \
   -type f -name 'libCseDigilent.so' 2>/dev/null
 ```
 
-Use the actual path returned by `find` with `ldd`. If dependencies are
-missing, record their names and investigate those specific libraries.
+Use the path returned by `find` when running `ldd`. If it reports
+missing libraries, record the names rather than installing random
+packages.
 
-**\[SCREENSHOT PLACEHOLDER --- Adept library directory\]**
+## 4.8 Launch iMPACT again
 
-`images/adept-library-directory.png`
+First, locate the ISE environment script if you do not know the
+installation path:
 
-**\[SCREENSHOT PLACEHOLDER --- ldconfig showing libdjtg\]**
+``` bash
+find "$HOME" /opt /usr/local \
+  -type f -name 'settings64.sh' 2>/dev/null
+```
 
-`images/ldconfig-libdjtg.png`
-
-**\[SCREENSHOT PLACEHOLDER --- Plugin dependency check\]**
-
-`images/digilent-plugin-ldd.png`
-
-## 7. Troubleshoot iMPACT/JTAG detection
-
-Launch iMPACT after sourcing the environment:
+Use the path corresponding to your ISE 14.7 installation. For example:
 
 ``` bash
 source "$HOME/Documents/14.7/ISE_DS/settings64.sh"
@@ -447,31 +388,20 @@ Inside iMPACT:
 
 1.  Select **Configure devices using Boundary-Scan (JTAG)**.
 2.  Click **OK**.
-3.  Choose **Initialize Chain**.
-4.  The FPGA should be detected as `xc6slx45`.
-5.  Right-click the FPGA and choose **Assign New Configuration File**.
-6.  Select the generated `.bit` file.
-7.  If asked to assign an SPI/BPI PROM file, select **No** for this JTAG
-    procedure.
-8.  Right-click the FPGA and choose **Program**.
-9.  Leave **Verify** unchecked, as in the documented procedure.
-10. Click **OK/Program** and wait for the result.
+3.  Try **Initialize Chain**.
+4.  If the FPGA appears as `xc6slx45`, right-click it.
+5.  Select **Assign New Configuration File** and choose your generated
+    `.bit` file.
+6.  Select **No** if asked whether to assign an SPI/BPI PROM file.
+7.  Right-click the FPGA and select **Program**.
+8.  Leave **Verify** unchecked, as in the previous procedure, and click
+    **OK/Program**.
 
-**\[SCREENSHOT PLACEHOLDER --- iMPACT Boundary Scan\]**
+If programming succeeds, test the FPGA design.
 
-`images/impact-boundary-scan.png`
+## 4.9 If the `windrvr6` warning remains
 
-**\[SCREENSHOT PLACEHOLDER --- Initialised chain\]**
-
-`images/impact-initialized-chain.png`
-
-**\[SCREENSHOT PLACEHOLDER --- Assigning bitstream\]**
-
-`images/impact-assign-bitstream.png`
-
-### If the `windrvr6` warning remains
-
-Messages may include:
+You may still see a message like:
 
 ``` text
 WARNING:iMPACT - Module windrvr6 is not loaded.
@@ -479,182 +409,313 @@ Cable connection failed.
 Cable autodetection failed.
 ```
 
-This warning refers to the legacy Xilinx cable-driver mechanism. By
-itself, it does not establish whether the Digilent runtime or JTAG
-interface will work.
+This warning refers to the legacy Xilinx cable-driver mechanism. It does
+not, by itself, establish whether the Digilent runtime or JTAG interface
+will work.
 
-If the board is still not detected:
+If iMPACT still cannot detect the board after the checks above:
 
 -   Save the complete iMPACT console log.
--   Check `ldconfig -p | grep libdjtg`.
+-   Check the output of `ldconfig -p | grep libdjtg`.
 -   Check the plugin's `ldd` output.
 -   Recheck USB permissions using the current device path.
--   Confirm the board is powered and visible in `lsusb`.
 
-Avoid repeatedly retrying without checking the diagnostic output.
+Do not repeatedly retry detection without gathering the new output.
 
-## 8. Understand the example design
+# 5. Understand the Calculator and Binary Arithmetic
 
-The example is a 4-bit adder/subtractor. It accepts two unsigned
-four-bit operands:
+## 5.1 Four-bit numbers
 
--   A = SW7--SW4.
--   B = SW3--SW0.
+Each slide switch represents one bit.
 
-The operation is selected by push buttons:
+-   ON/high means `1`.
+-   OFF/low means `0`.
 
--   ADD: BTNC (centre button), mapped to F5 in this project.
--   SUBTRACT: BTNR (right button), mapped to F6 in this project.
+Four bits represent unsigned values from 0 to 15.
 
-The selected mode remains active after the button is released. ADD is
-the startup mode. LD4--LD0 display the five-bit result; LD4 is the most
-significant bit. LD7--LD5 are forced LOW.
+For example:
 
-### 8.1 Binary arithmetic
+-   `0111₂` = 7
+-   `0011₂` = 3
 
-Four bits represent unsigned values from 0 to 15:
+## 5.2 Full-adder logic
 
-``` text
-0111₂ = 7
-0011₂ = 3
-```
+A full adder processes three one-bit inputs: A, B and carry-in (`Cin`).
+It produces a sum bit (`S`) and carry-out (`Cout`). The carry-out feeds
+the next more-significant stage.
 
-The largest sum is 15 + 15 = 30, or `11110`, so five result bits are
-required.
-
-### 8.2 Full-adder theory
-
-A full adder accepts A, B and carry-in (`Cin`), and produces sum (`S`)
-and carry-out (`Cout`):
+The equations are:
 
 ``` text
 S    = A XOR B XOR Cin
 Cout = (A AND B) OR (A AND Cin) OR (B AND Cin)
 ```
 
-Four full-adder stages connected in sequence form a ripple-carry adder.
-Each stage's carry-out feeds the next more-significant stage.
+In a four-stage ripple-carry structure, FA0 processes bit 0 and begins
+with `Cin = 0`. FA1, FA2 and FA3 process higher bits. The final carry C4
+is the fifth result bit.
 
-The example Verilog below uses the `+` and `-` operators rather than
-explicitly instantiating four full-adder modules. Synthesis maps those
-arithmetic expressions into FPGA logic. The full-adder explanation
-describes the underlying arithmetic structure.
+The current Verilog implementation in this guide uses the `+` and `-`
+operators; synthesis maps these arithmetic expressions into FPGA logic.
+The full-adder equations explain the underlying binary arithmetic
+structure.
 
-**\[IMAGE PLACEHOLDER --- Four-stage ripple-carry adder diagram\]**
+## 5.3 Addition example: 7 + 3
 
-`images/ripple-carry-adder.png`
+``` text
+A = 0111 (7)
+B = 0011 (3)
+-----------
+7 + 3 = 01010
+```
 
-### 8.3 Subtraction and two's complement
+The result is binary `01010`, decimal 10.
 
-A common digital subtraction method is:
+-   LD4 = 0
+-   LD3 = 1
+-   LD2 = 0
+-   LD1 = 1
+-   LD0 = 0
+
+## 5.4 Subtraction and two's complement
+
+A common digital method computes:
 
 ``` text
 A - B = A + (~B) + 1
 ```
 
-The example uses five-bit subtraction. Differences from -15 to +15 fit
-in five-bit two's-complement representation. LD4 is the sign bit for
-these subtraction results.
+Invert B and add one, then add it to A. The current code uses a five-bit
+subtraction expression, which synthesis implements as FPGA logic.
 
-  Operation   Five-bit result     Decimal interpretation
-  ----------- ----------------- ------------------------
-  7 + 3       `01010`                                 10
-  3 - 7       `11100`                                 -4
-  15 + 1      `10000`                                 16
+The largest addition is:
 
-## 9. Create an ISE project
+``` text
+15 + 15 = 30 = 11110
+```
 
-Start ISE:
+Therefore, five bits are required.
+
+Subtraction results range from -15 to +15 and are displayed as five-bit
+two's complement. LD4 is the sign bit for these subtraction results.
+
+Examples:
+
+``` text
+7 + 3  = 01010  (10)
+3 - 7  = 11100  (-4 in 5-bit two's complement)
+15 + 1 = 10000  (16)
+```
+
+# 6. Create the ISE Project
+
+## Step 1 --- Load the ISE environment and launch ISE
+
+Open a terminal:
 
 ``` bash
-source "$HOME/Documents/14.7/ISE_DS/settings64.sh"
+source ~/Documents/14.7/ISE_DS/settings64.sh
 ise
 ```
 
-In Project Navigator:
+Add the license file when prompted.
 
-1.  Select **File → New Project**.
-2.  Enter a project name, for example `Atlys_Adder_Subtractor`.
-3.  Choose a convenient project directory, for example
-    `~/Documents/FPGA/Atlys_Adder_Subtractor`.
-4.  Click **Next**.
+## Step 2 --- Create a new project
 
-**\[SCREENSHOT PLACEHOLDER --- New Project wizard\]**
+In ISE, choose:
 
-`images/ise-new-project.png`
+**File → New Project**
 
-Set:
+## Step 3 --- Name the project
 
-  Property             Value
-  -------------------- --------------------------
-  Family               Spartan6
-  Device               XC6SLX45
-  Package              CSG324
-  Speed                -3
-  Preferred Language   Verilog
-  Design Flow          ISE WebPACK, if prompted
+Name the project:
 
-Click **Next**, choose Verilog as the preferred HDL, continue through
-the wizard and click **Finish**.
+``` text
+Atlys_Adder_Subtractor
+```
 
-**\[SCREENSHOT PLACEHOLDER --- Device properties\]**
+Choose an easy-to-find folder, for example:
 
-`images/ise-device-properties.png`
+``` text
+~/Documents/FPGA/Atlys_Adder_Subtractor
+```
 
-**\[SCREENSHOT PLACEHOLDER --- Project wizard finish\]**
+Click **Next**.
 
-`images/ise-project-finish.png`
+## Step 4 --- Select the FPGA device
 
-## 10. Add Verilog and UCF files
+Choose:
 
-### 10.1 Add Verilog
+-   Family: `Spartan6`
+-   Device: `XC6SLX45`
+-   Package: `CSG324`
+-   Speed: `-3`
 
-1.  Select **Project → New Source**.
-2.  Choose **Verilog Module**.
-3.  Name it `adder4`.
-4.  Complete the wizard.
-5.  Open `adder4.v`, replace its contents with the complete design
-    source, and save.
+Select the ISE WebPACK design flow if prompted. Click **Next**.
 
-The source contains two modules:
+## Step 5 --- Select the HDL
 
--   `debounce_button`: synchronises the asynchronous button input,
-    filters contact bounce and generates a one-clock-cycle press pulse.
--   `adder4`: connects switches, debouncers, operation-selection
-    register, arithmetic logic and LEDs.
+Choose Verilog as the preferred HDL, continue through the wizard and
+click **Finish**.
 
-**\[SCREENSHOT PLACEHOLDER --- New Verilog source wizard\]**
+## Step 6 --- Create the Verilog source
 
-`images/ise-add-verilog-source.png`
+Choose:
 
-**\[SCREENSHOT PLACEHOLDER --- Verilog code in editor\]**
+**Project → New Source → Verilog Module**
 
-`images/ise-verilog-editor.png`
+Name it:
 
-### 10.2 Add the UCF
+``` text
+adder4
+```
 
-Create or add `adder4.ucf` and enter the constraints in Section 11. The
-UCF signal names must match the top-level Verilog ports exactly: `clk`,
-`sw`, `btn_add`, `btn_sub` and `led`.
+Then finish the wizard.
 
-**\[SCREENSHOT PLACEHOLDER --- UCF editor\]**
+## Step 7 --- Add the Verilog code
 
-`images/ise-ucf-editor.png`
+Open `adder4.v`, replace its contents with the code in Section 7, and
+save.
 
-### 10.3 Set the top-level module
+## Step 8 --- Create or add the UCF file
 
-Confirm `adder4` is the top module. If necessary, right-click `adder4`
-in the Hierarchy pane and choose **Set as Top Module**.
+Create or add a UCF file named:
 
-**\[SCREENSHOT PLACEHOLDER --- Set as Top Module\]**
+``` text
+adder4.ucf
+```
 
-`images/ise-set-top-module.png`
+Paste the constraints from Section 8.
 
-## 11. Synthesis, implementation and bitstream generation
+## Step 9 --- Set the top module
 
-### 11.1 UCF constraints
+Confirm `adder4` is the top module. If needed, right-click it in the
+Hierarchy pane and choose **Set as Top Module**.
 
-The following constraints are the supplied example for the Atlys board:
+# 7. Complete Verilog Code
+
+This version uses a 20-bit debounce counter, sufficient for
+approximately 10 ms at 100 MHz. ADD is the startup default. Pressing a
+button selects that mode until the other button is pressed.
+
+``` verilog
+`timescale 1ns / 1ps
+
+module debounce_button #(
+    parameter integer CLK_HZ = 100_000_000
+)(
+    input  wire clk,
+    input  wire button_in,
+    output reg  press_pulse = 1'b0
+);
+
+    // Synchronize the asynchronous button input.
+    reg sync_1 = 1'b0;
+    reg sync_2 = 1'b0;
+
+    // Store the debounced button state.
+    reg stable_state = 1'b0;
+
+    // Approximately 10 ms debounce interval.
+    localparam integer DEBOUNCE_COUNT = CLK_HZ / 100;
+
+    reg [19:0] counter = 0;
+
+    always @(posedge clk) begin
+        sync_1 <= button_in;
+        sync_2 <= sync_1;
+
+        // Default: no press event.
+        press_pulse <= 1'b0;
+
+        if (sync_2 == stable_state) begin
+            counter <= 0;
+        end
+        else if (counter >= DEBOUNCE_COUNT - 1) begin
+            counter <= 0;
+            stable_state <= sync_2;
+
+            // Generate a pulse only on a new press.
+            if (sync_2 == 1'b1)
+                press_pulse <= 1'b1;
+        end
+        else begin
+            counter <= counter + 1'b1;
+        end
+    end
+
+endmodule
+
+
+module adder4 (
+    input  wire       clk,
+    input  wire [7:0] sw,
+    input  wire       btn_add,
+    input  wire       btn_sub,
+    output wire [7:0] led
+);
+
+    wire [3:0] a;
+    wire [3:0] b;
+
+    wire add_press;
+    wire sub_press;
+
+    // 0 = ADD, 1 = SUBTRACT. ADD is the startup mode.
+    reg sub_mode = 1'b0;
+
+    assign a = sw[7:4];
+    assign b = sw[3:0];
+
+    // Debounce the two push buttons.
+    debounce_button ADD_BUTTON (
+        .clk(clk),
+        .button_in(btn_add),
+        .press_pulse(add_press)
+    );
+
+    debounce_button SUB_BUTTON (
+        .clk(clk),
+        .button_in(btn_sub),
+        .press_pulse(sub_press)
+    );
+
+    // If both buttons are pressed together, ADD has priority.
+    always @(posedge clk) begin
+        if (add_press)
+            sub_mode <= 1'b0;
+        else if (sub_press)
+            sub_mode <= 1'b1;
+    end
+
+    // Use five-bit arithmetic so subtraction results
+    // are displayed in five-bit two's complement.
+    wire [4:0] a_ext;
+    wire [4:0] b_ext;
+    wire [4:0] result;
+
+    assign a_ext = {1'b0, a};
+    assign b_ext = {1'b0, b};
+
+    assign result = sub_mode
+                  ? (a_ext - b_ext)
+                  : (a_ext + b_ext);
+
+    // LD4 is the fifth bit of the result.
+    assign led[4:0] = result;
+
+    // Unused LEDs are kept low.
+    assign led[7:5] = 3'b000;
+
+endmodule
+```
+
+# 8. Complete UCF Constraints
+
+These constraints use the pin assignments discussed for the Atlys board.
+The LED I/O standards intentionally differ, matching the reference UCF
+shared for this project. Do not change them only to suppress the
+mixed-bus warning.
 
 ``` text
 # Atlys slide switches SW0-SW7
@@ -663,342 +724,283 @@ NET "sw<1>" LOC = "D14" | IOSTANDARD = LVCMOS33;
 NET "sw<2>" LOC = "C14" | IOSTANDARD = LVCMOS33;
 NET "sw<3>" LOC = "P15" | IOSTANDARD = LVCMOS33;
 NET "sw<4>" LOC = "P12" | IOSTANDARD = LVCMOS33;
-NET "sw<5>" LOC = "R5"  | IOSTANDARD = LVCMOS33;
-NET "sw<6>" LOC = "T5"  | IOSTANDARD = LVCMOS33;
-NET "sw<7>" LOC = "E4"  | IOSTANDARD = LVCMOS33;
+NET "sw<5>" LOC = "R5" | IOSTANDARD = LVCMOS33;
+NET "sw<6>" LOC = "T5" | IOSTANDARD = LVCMOS33;
+NET "sw<7>" LOC = "E4" | IOSTANDARD = LVCMOS33;
 
-# LEDs
+# Light Emitting Diodes
 NET "led<0>" LOC = "U18" | IOSTANDARD=LVCMOS25 | SLEW=QUIETIO | DRIVE=2;
 NET "led<1>" LOC = "M14" | IOSTANDARD=LVCMOS25 | SLEW=QUIETIO | DRIVE=2;
 NET "led<2>" LOC = "N14" | IOSTANDARD=LVCMOS25 | SLEW=QUIETIO | DRIVE=2;
 NET "led<3>" LOC = "L14" | IOSTANDARD=LVCMOS25 | SLEW=QUIETIO | DRIVE=2;
 NET "led<4>" LOC = "M13" | IOSTANDARD=LVCMOS25 | SLEW=QUIETIO | DRIVE=2;
-NET "led<5>" LOC = "D4"  | IOSTANDARD=LVCMOS33 | SLEW=QUIETIO | DRIVE=2;
+NET "led<5>" LOC = "D4" | IOSTANDARD=LVCMOS33 | SLEW=QUIETIO | DRIVE=2;
 NET "led<6>" LOC = "P16" | IOSTANDARD=LVCMOS25 | SLEW=QUIETIO | DRIVE=2;
 NET "led<7>" LOC = "N12" | IOSTANDARD=LVCMOS33 | SLEW=QUIETIO | DRIVE=2;
 
-# Clock and buttons
-NET "clk"     LOC = "L15" | IOSTANDARD = LVCMOS33;
-NET "btn_add" LOC = "F5"  | IOSTANDARD = LVCMOS33;
-NET "btn_sub" LOC = "F6"  | IOSTANDARD = LVCMOS33;
+NET "clk" LOC = "L15" | IOSTANDARD=LVCMOS33;
+NET "btn_add" LOC = "F5" | IOSTANDARD=LVCMOS33;
+NET "btn_sub" LOC = "F6" | IOSTANDARD=LVCMOS33;
 ```
 
-The clock and button assumptions are L15 = 100 MHz, BTNC = F5 and BTNR =
-F6. Confirm them against your board revision and known-working
-constraints.
+## 8.1 Switch pin assignments
 
-The supplied LED bus intentionally mixes LVCMOS25 and LVCMOS33. Do not
-change assignments simply to silence a warning; verify electrical
-compatibility against the board documentation.
+  Switch   Verilog signal   FPGA pin
+  -------- ---------------- ----------
+  SW0      `sw[0]`          A10
+  SW1      `sw[1]`          D14
+  SW2      `sw[2]`          C14
+  SW3      `sw[3]`          P15
+  SW4      `sw[4]`          P12
+  SW5      `sw[5]`          R5
+  SW6      `sw[6]`          T5
+  SW7      `sw[7]`          E4
 
-### 11.2 Add a clock timing constraint
+## 8.2 LED pin assignments
 
-The UCF above assigns the clock pin but does not specify its period. If
-L15 is confirmed to be 100 MHz, add:
+  LED   Verilog signal   FPGA pin   I/O standard
+  ----- ---------------- ---------- --------------
+  LD0   `led[0]`         U18        LVCMOS25
+  LD1   `led[1]`         M14        LVCMOS25
+  LD2   `led[2]`         N14        LVCMOS25
+  LD3   `led[3]`         L14        LVCMOS25
+  LD4   `led[4]`         M13        LVCMOS25
+  LD5   `led[5]`         D4         LVCMOS33
+  LD6   `led[6]`         P16        LVCMOS25
+  LD7   `led[7]`         N12        LVCMOS33
+
+The LED outputs also specify `SLEW=QUIETIO` and `DRIVE=2`.
+
+## 8.3 Clock and button assignments
+
+  Signal      FPGA pin   Purpose
+  ----------- ---------- --------------------
+  `clk`       L15        Clock input
+  `btn_add`   F5         ADD selection
+  `btn_sub`   F6         SUBTRACT selection
+
+Assumptions: the 100 MHz clock is on L15; BTNC is F5; BTNR is F6.
+Confirm against the board revision and the known-working LED-blink
+project.
+
+The comments in a UCF are explanatory only; the `LOC` and `IOSTANDARD`
+attributes are the actual constraints.
+
+The UCF shown above does not include a clock-period `TIMESPEC`. For a
+properly constrained ISE design, add a clock-period constraint
+appropriate to the actual board clock. If the clock on L15 is confirmed
+to be 100 MHz, its period is 10 ns.
+
+# 9. Synthesize, Implement and Generate the Bitstream
+
+## Step 1 --- Synthesize
+
+In the Processes pane, double-click **Synthesize - XST** and wait for
+completion.
+
+## Step 2 --- Implement
+
+If synthesis completes, double-click **Implement Design**.
+
+## Step 3 --- Generate the programming file
+
+If implementation completes, double-click **Generate Programming File**.
+
+## Step 4 --- Confirm the bitstream
+
+Confirm that `adder4.bit` is created in the project's implementation
+directory.
+
+## Step 5 --- Understand the mixed-I/O-standard warning
+
+A `Place:838` mixed-I/O-standard warning can appear because the LED bus
+intentionally contains LVCMOS25 and LVCMOS33 signals.
+
+The warning alone does not prove the arithmetic failed. The reference
+constraints intentionally use mixed standards on the LED bus. Do not
+change valid assignments just to silence the warning.
+
+## Step 6 --- Resolve errors
+
+If any process fails, read the first `ERROR` in the Console and resolve
+it before programming.
+
+# 10. Program the FPGA Using iMPACT
+
+## Step 1 --- Connect the board
+
+Power the Atlys and connect the Digilent USB programming cable to the
+board's Adept/JTAG USB port.
+
+## Step 2 --- Launch iMPACT
+
+In ISE, run **Configure Target Device (iMPACT)**, or launch `impact`
+from a terminal after sourcing `settings64.sh`.
+
+## Step 3 --- Select Boundary Scan
+
+Create an iMPACT project if prompted and select **Boundary Scan**.
+
+## Step 4 --- Initialise the JTAG chain
+
+Right-click in the Boundary Scan area and choose **Initialize Chain**.
+
+The FPGA should be detected as:
 
 ``` text
-NET "clk" TNM_NET = "sys_clk_pin";
-TIMESPEC "TS_sys_clk_pin" = PERIOD "sys_clk_pin" 10 ns HIGH 50%;
+xc6slx45
 ```
 
-A 100 MHz clock has a 10 ns period. Use the actual period if your clock
-source differs.
+## Step 5 --- Select the bitstream
 
-### 11.3 Run synthesis
+When prompted to assign a configuration file, select the generated
+`adder4.bit` by clicking **Open**.
 
-1.  In the Processes pane, double-click **Synthesize - XST**.
-2.  Wait for completion.
-3.  Check the Console and synthesis reports for errors.
+When prompted to upload the `.bit` to flash PROM, press **NO**.
 
-**\[SCREENSHOT PLACEHOLDER --- Synthesis complete\]**
+## Step 6 --- Assign the bitstream
 
-`images/ise-synthesis-complete.png`
+Assign the bitstream to the `xc6slx45` device.
 
-### 11.4 Run implementation
+## Step 7 --- Program
 
-If synthesis succeeds, double-click **Implement Design** and wait for
-completion. Review the Console and implementation reports.
+Right-click the FPGA and select **Program**. Wait for the success
+message.
 
-**\[SCREENSHOT PLACEHOLDER --- Implementation complete\]**
+## Step 8 --- Test
 
-`images/ise-implementation-complete.png`
+Follow the operating and test instructions in the next section.
 
-### 11.5 Generate the bitstream
+> JTAG-loaded configuration is volatile. After removing board power,
+> program the `.bit` file again unless you separately program the SPI
+> flash for automatic configuration at power-up.
 
-1.  Double-click **Generate Programming File**.
-2.  Wait for completion.
-3.  Locate the generated `.bit` file in the project implementation
-    output directory.
+# 11. Operate and Test the Calculator
 
-The exact output path depends on the project location and ISE
-configuration.
+## 11.1 Enter A and B
 
-**\[SCREENSHOT PLACEHOLDER --- Bitstream generated\]**
+Set A using SW7--SW4 and B using SW3--SW0.
 
-`images/ise-bitstream-generated.png`
-
-A `Place:838` mixed-I/O-standard warning can appear because the supplied
-LED constraints intentionally mix LVCMOS25 and LVCMOS33. The warning
-alone does not prove that the arithmetic design failed. If a process
-fails, find and resolve the first actual `ERROR` in the Console before
-programming.
-
-## 12. Program the FPGA using iMPACT
-
-1.  Power the Atlys board.
-2.  Connect the Digilent programming USB cable to the Adept/JTAG USB
-    port.
-3.  Confirm USB detection with `lsusb`.
-4.  Launch **Configure Target Device (iMPACT)** from ISE, or run
-    `impact` from a terminal after sourcing `settings64.sh`.
-5.  If prompted, create an iMPACT project.
-6.  Select **Boundary Scan**.
-7.  Right-click the Boundary Scan area and choose **Initialize Chain**.
-8.  The FPGA should be detected as `xc6slx45`.
-9.  When prompted, select the generated `.bit` file.
-10. If asked to assign an SPI/BPI PROM file, select **No** for this JTAG
-    procedure.
-11. Right-click the FPGA and select **Program**.
-12. Leave **Verify** unchecked, following the procedure documented for
-    this project.
-13. Start programming and wait for the success message.
-
-**\[SCREENSHOT PLACEHOLDER --- iMPACT Boundary Scan\]**
-
-`images/impact-boundary-scan.png`
-
-**\[SCREENSHOT PLACEHOLDER --- JTAG chain detected\]**
-
-`images/impact-initialized-chain.png`
-
-**\[SCREENSHOT PLACEHOLDER --- Bitstream selection\]**
-
-`images/impact-select-bit-file.png`
-
-**\[SCREENSHOT PLACEHOLDER --- Program dialog\]**
-
-`images/impact-program-dialog.png`
-
-**\[SCREENSHOT PLACEHOLDER --- Programming success\]**
-
-`images/impact-programming-success.png`
-
-A JTAG-loaded configuration is volatile. Removing board power loses the
-configuration, so program the `.bit` file again after power-up unless
-you separately configure the SPI flash for automatic startup
-configuration.
-
-## 13. Operate and test the adder/subtractor
-
-### 13.1 Set the operands
-
--   A is set using SW7--SW4.
--   B is set using SW3--SW0.
--   Switch ON/high means `1`.
--   Switch OFF/low means `0`.
+-   ON/high means `1`.
+-   OFF/low means `0`.
 
 Read each group from its most significant bit to its least significant
 bit.
 
-**\[IMAGE PLACEHOLDER --- Switch mapping\]**
+## 11.2 Select an operation
 
-`images/operand-switch-mapping.png`
+-   **ADD:** Press BTNC (centre pushbutton) once, then release it.
+    Addition stays selected.
+-   **SUBTRACT:** Press BTNR (right pushbutton) once, then release it.
+    Subtraction stays selected.
 
-### 13.2 Select the operation
+To return to addition, press BTNC again.
 
--   Press BTNC (centre button) once and release it to select ADD.
--   Press BTNR (right button) once and release it to select SUBTRACT.
--   The selected operation remains active after release.
--   Press BTNC again to return to addition.
+These are mode-selection buttons; you do not need to hold them down.
+Allow the debounce interval to elapse before expecting the selected mode
+to update.
 
-These buttons select a mode; they do not need to be held down.
+## 11.3 Read the result
 
-**\[IMAGE PLACEHOLDER --- Operation buttons and LEDs\]**
+LD4--LD0 display the five result bits.
 
-`images/operation-buttons-result-leds.png`
+-   LD4 is the most significant bit.
+-   LD0 is the least significant bit.
+-   A lit LED represents `1`.
+-   An unlit LED represents `0`.
+-   LD7--LD5 are forced LOW by the program.
 
-### 13.3 Read the output
+## 11.4 Example results
 
-LD4--LD0 display the five-bit result. LD4 is the most significant bit
-and LD0 the least significant bit. A lit LED represents `1`; an unlit
-LED represents `0`. LD7--LD5 are forced LOW.
+  A             B             Selected mode   LD4 LD3 LD2 LD1 LD0
+  ------------- ------------- --------------- ---------------------
+  7 (`0111`)    3 (`0011`)    ADD             `01010` = 10
+  7 (`0111`)    3 (`0011`)    SUBTRACT        `00100` = 4
+  3 (`0011`)    7 (`0111`)    SUBTRACT        `11100` = -4
+  15 (`1111`)   1 (`0001`)    ADD             `10000` = 16
+  15 (`1111`)   15 (`1111`)   ADD             `11110` = 30
 
-              A             B Mode       LD4--LD0
-  ------------- ------------- ---------- --------------
-     7 (`0111`)    3 (`0011`) ADD        `01010` = 10
-     7 (`0111`)    3 (`0011`) SUBTRACT   `00100` = 4
-     3 (`0011`)    7 (`0111`) SUBTRACT   `11100` = -4
-    15 (`1111`)    1 (`0001`) ADD        `10000` = 16
-    15 (`1111`)   15 (`1111`) ADD        `11110` = 30
-
-### 13.4 Test procedure
+## 11.5 Test procedure
 
 1.  Set SW7--SW4 to `0111` (A = 7).
 2.  Set SW3--SW0 to `0011` (B = 3).
-3.  Press BTNC and confirm LD4--LD0 show `01010` (10). Release BTNC; ADD
-    remains selected.
-4.  Press BTNR and confirm LD4--LD0 show `00100` (4). Release BTNR;
-    SUBTRACT remains selected.
-5.  Set A to `0011` (3) and B to `0111` (7). Ensure SUBTRACT is
-    selected. The LEDs should show `11100`, representing -4 in five-bit
-    two's complement.
-6.  Press BTNC and verify that the mode returns to ADD.
+3.  Press BTNC and confirm LD4--LD0 show `01010` (10).
+4.  Release BTNC; ADD remains selected.
+5.  Press BTNR and confirm LD4--LD0 show `00100` (4).
+6.  Release BTNR; SUBTRACT remains selected.
+7.  Set A = `0011` (3) and B = `0111` (7).
+8.  Ensure SUBTRACT is selected. The LEDs should show `11100`, which
+    represents -4 in five-bit two's complement.
+9.  Press BTNC again and verify that the mode returns to ADD.
 
-**\[SCREENSHOT PLACEHOLDER --- Board displaying addition result\]**
-
-`images/test-addition-on-board.png`
-
-**\[SCREENSHOT PLACEHOLDER --- Board displaying subtraction result\]**
-
-`images/test-subtraction-on-board.png`
-
-## 14. Troubleshooting
+# 12. Troubleshooting
 
   -----------------------------------------------------------------------
-  Symptom                             Checks
+  Problem                             What to check
   ----------------------------------- -----------------------------------
-  `ise` or `impact` not found         Source the correct `settings64.sh`
-                                      and verify the installation path
+  Top module missing                  Set `adder4` as the top module and
+                                      save all source files.
 
-  Board absent from `lsusb`           Check power, cable, USB port and
-                                      selected board connector
+  UCF errors                          Check that the UCF names match the
+                                      Verilog ports exactly: `clk`, `sw`,
+                                      `btn_add`, `btn_sub` and `led`.
 
-  USB detected but JTAG fails         Check udev rule, current USB
-                                      permissions, Adept libraries and
-                                      plugin
+  Buttons do not select correctly     Verify BTNC/F5, BTNR/F6, clock L15
+                                      and button polarity against your
+                                      board revision.
 
-  `windrvr6` warning                  This is a legacy driver warning;
-                                      also inspect Digilent runtime and
-                                      plugin
-
-  `libdjtg` absent from linker cache  Verify the library exists, register
-                                      its actual directory and run
-                                      `sudo ldconfig`
-
-  Plugin dependencies missing         Run `ldd` on the actual
-                                      `libCseDigilent.so` and investigate
-                                      reported dependencies
-
-  JTAG chain does not initialise      Recheck USB detection, permissions,
-                                      runtime, plugin and board power
-
-  FPGA not detected as `xc6slx45`     Check board connection and JTAG
-                                      chain
-
-  Top module missing                  Set `adder4` as top module
-
-  UCF errors                          Match UCF names to Verilog ports:
-                                      `clk`, `sw`, `btn_add`, `btn_sub`,
-                                      `led`
-
-  Buttons do not select modes         Verify BTNC/F5, BTNR/F6, clock L15
-                                      and button polarity for the board
-                                      revision
-
-  Mixed-I/O-standard warning          The reference LED constraints
-                                      intentionally mix standards; verify
-                                      assignments rather than changing
-                                      them merely to silence the warning
+  `Place:838` warning                 The reference constraints
+                                      intentionally use mixed standards
+                                      on the LED bus. Do not change valid
+                                      assignments just to silence the
+                                      warning.
 
   Design disappears after power-off   JTAG configuration is volatile;
                                       reprogram after power-up unless SPI
-                                      flash is configured
+                                      flash is separately configured.
 
-  Wrong numerical result              Check switch ordering, selected
-                                      mode and LD4 as the most
-                                      significant result bit
+  Wrong numerical result              Check switch order, selected
+                                      operation, and read LD4 as the most
+                                      significant result bit.
+
+  iMPACT cannot detect the board      Follow the USB detection, udev
+                                      permissions, Adept runtime, dynamic
+                                      linker and plugin checks in Section
+                                      4.
+
+  `windrvr6` warning                  The warning relates to the legacy
+                                      Xilinx cable-driver mechanism.
+                                      Gather the iMPACT log and
+                                      diagnostic outputs rather than
+                                      repeatedly retrying detection.
   -----------------------------------------------------------------------
 
-Useful diagnostic commands:
+# 13. References
 
-``` bash
-# Check USB detection
-lsusb -d 1443:0007
+-   Digilent Atlys official reference page:\
+    https://digilent.com/reference/programmable-logic/atlys/reference-manual
 
-# Find Digilent udev rule
-find "$HOME" /opt /usr/local \
-  -type f -name '52-digilent-usb.rules' 2>/dev/null
+-   Digilent Atlys Reference Manual (2013):\
+    https://wwwpub.zih.tu-dresden.de/\~ss17/wiki/www.mr.inf.tu-dresden.de/wiki/Atlys_rm1f5c.pdf?fileId=448
 
-# Check Adept libraries
-ls -l /usr/local/lib64/digilent/adept/
-ldconfig -p | grep -E 'libdjtg|libusb-1.0'
+-   Digilent Atlys Reference Manual (2018):\
+    https://wwwpub.zih.tu-dresden.de/\~ss17/wiki/www.mr.inf.tu-dresden.de/wiki/Atlys_rm1f5c.pdf?fileId=448
 
-# Find ISE Digilent plugin
-find "$HOME" /opt /usr/local \
-  -type f -name 'libCseDigilent.so' 2>/dev/null
+-   User Constraints File for the Digilent Atlys board, Rev. C:\
+    https://github.com/alexforencich/verilog-uart/blob/master/example/ATLYS/fpga/fpga.ucf
 
-# Find ISE environment script
-find "$HOME" /opt /usr/local \
-  -type f -name 'settings64.sh' 2>/dev/null
-```
-
-## 15. Important notes
-
--   Paths and Adept runtime versions in this guide are examples from one
-    Ubuntu installation. Use paths that actually exist on your computer.
--   The clock assignment assumes L15 is the 100 MHz clock. Verify this
-    against the board documentation.
--   The button mapping assumes BTNC = F5 and BTNR = F6. Confirm it for
-    your board revision.
--   The supplied LED UCF entries mix LVCMOS25 and LVCMOS33. They are
-    reproduced from the project constraints; check electrical
-    compatibility against the board documentation.
--   This procedure programs the FPGA over JTAG. It does not program
-    non-volatile SPI flash.
--   The guide records a troubleshooting approach, not a guarantee that
-    every Ubuntu/ISE installation has identical libraries or paths.
--   Keep complete iMPACT console logs when troubleshooting.
-
-## 16. References
-
-1.  AMD/Xilinx --- ISE Design Suite 14.7 legacy download:\
-    <https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/legacy-ise/v2012_4---14_7.html>
-2.  Digilent --- Atlys Reference Manual:\
-    <https://digilent.com/reference/programmable-logic/atlys/reference-manual>
-3.  Atlys Reference Manual PDF mirror cited in the source guide:\
-    <https://wwwpub.zih.tu-dresden.de/~ss17/wiki/www.mr.inf.tu-dresden.de/wiki/Atlys_rm1f5c.pdf?fileId=448>
-4.  Example Atlys UCF constraints:\
-    <https://github.com/alexforencich/verilog-uart/blob/master/example/ATLYS/fpga/fpga.ucf>
+-   ChatGPT project discussion:\
+    https://chatgpt.com/share/6acf2123-45a0-83e8-ac6b-4410a6652b7c
 
 ------------------------------------------------------------------------
 
-## Suggested repository layout
+## Learning Note
 
-If this is the main repository README, keep images in a root-level
-`images/` folder:
+The full-adder diagram explains the underlying arithmetic structure. The
+supplied Verilog uses the `+` and `-` operators, which synthesis maps
+into FPGA logic.
 
-``` text
-Atlys-FPGA-Projects/
-├── README.md
-├── images/
-│   ├── atlys-board-overview.png
-│   ├── ise-download-page.png
-│   ├── ise-install-wizard.png
-│   ├── ise-project-navigator.png
-│   ├── lsusb-atlys-detected.png
-│   ├── atlys-usb-permissions.png
-│   ├── adept-library-directory.png
-│   ├── impact-initialized-chain.png
-│   ├── ise-new-project.png
-│   ├── ise-device-properties.png
-│   ├── ise-verilog-editor.png
-│   ├── ise-ucf-editor.png
-│   ├── ise-synthesis-complete.png
-│   ├── ise-implementation-complete.png
-│   ├── ise-bitstream-generated.png
-│   ├── impact-programming-success.png
-│   ├── operand-switch-mapping.png
-│   ├── operation-buttons-result-leds.png
-│   ├── test-addition-on-board.png
-│   └── test-subtraction-on-board.png
-└── Atlys_4Bit_Adder_Subtractor/
-    ├── adder4.v
-    ├── adder4.ucf
-    └── README.md
-```
-
-The screenshot references in this document are placeholders. Add your
-own images using the filenames shown, or update the Markdown paths to
-match your chosen filenames.
-
-**End of guide.**
+This project brings together FPGA project creation, Verilog module
+design, binary arithmetic, input synchronisation, button debouncing,
+clocked mode selection, pin constraints, synthesis, implementation, JTAG
+programming and hardware testing.
