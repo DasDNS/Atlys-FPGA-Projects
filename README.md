@@ -87,13 +87,43 @@ Download all four files provided for the installation.
 ## 3.2 Extract and install
 
 1.  Extract `Xilinx_ISE_DS_14.7_1015_1-1.tar`.
-2.  Add the `.lic` license file as required by the installation.
-3.  Start the graphical installation wizard.
-4.  Follow the installation steps.
+
+<img width="1073" height="558" alt="Picture" src="https://github.com/user-attachments/assets/81e02799-f407-49d5-8eba-9c4c86dfdf1c" />
+
+<img width="987" height="703" alt="Picture" src="https://github.com/user-attachments/assets/31186ddc-b6c6-436e-98ef-aaf74f037423" />
+
+2.  Start the graphical installation wizard.
+
+<img width="1149" height="279" alt="Picture" src="https://github.com/user-attachments/assets/9ccb2156-72d8-4e5d-9baf-63f4984a0093" />
+
+<img width="1140" height="713" alt="Picture" src="https://github.com/user-attachments/assets/a6cc7f44-e964-4b37-8c6c-b080c8ebd00d" />
+
+<img width="1140" height="713" alt="Picture" src="https://github.com/user-attachments/assets/f45f8fcd-9301-4f54-a809-2ba33c4c2669" />
+
+<img width="1140" height="713" alt="Picture" src="https://github.com/user-attachments/assets/d73b5b6c-f4b1-474b-a200-de9e483c6e39" />
+
+<img width="1140" height="713" alt="Picture" src="https://github.com/user-attachments/assets/8f89124c-6b30-47e7-bd9e-2f8b0c4b53f4" />
+
+<img width="1140" height="713" alt="Picture" src="https://github.com/user-attachments/assets/740a5309-88ff-49e6-8f97-e6e50df96862" />
+
+<img width="977" height="713" alt="Picture" src="https://github.com/user-attachments/assets/65042606-7bb2-49a8-a283-7b5499b4608a" />
+
+<img width="977" height="713" alt="Picture" src="https://github.com/user-attachments/assets/ef0f2f47-8605-4621-9498-7f69291ae93e" />
+
+<img width="977" height="713" alt="Picture" src="https://github.com/user-attachments/assets/e83896de-1db2-4f99-8737-b5157c8a09e4" />
+
+<img width="977" height="713" alt="Picture" src="https://github.com/user-attachments/assets/0ef95a97-b07f-4a1c-8eb2-9319655ec579" />
+
+<img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/10e1e180-943e-4f6f-86b6-ed5cc94cc0e8" />
+
+
+3.  Follow the installation steps.
 
 If the Digilent programming driver or runtime installation fails, follow
 the USB and Adept troubleshooting procedure in the next section before
 using iMPACT.
+
+
 
 ## 3.3 Load the ISE environment
 
