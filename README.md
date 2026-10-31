@@ -19,7 +19,62 @@ result LEDs.
 
 <img width="600" height="600" alt="Picture" src="https://github.com/user-attachments/assets/506d1ef0-c215-4edf-abc1-2b2105657fa7" />
 
-### 1.1 Software
+## 2. About This Repository and How to Use This Guide
+
+This repository is intended to help you set up the Digilent Atlys FPGA development environment, install and configure the required software, create an FPGA project in Xilinx ISE, generate a programming bitstream, and load that bitstream onto the board.
+
+It is organised as a general setup and workflow guide together with separate folders for individual FPGA projects. The general guide explains the common process. Each project folder contains its own README with the project-specific Verilog explanation, design details, pin assignments, and testing information.
+
+### 2.1 Repository contents
+
+A typical repository layout is:
+
+```text
+Atlys-FPGA-Projects/
+├── README.md
+├── Atlys_LED_Blink/
+│   ├── README.md
+│   ├── led_blink.v
+│   └── led_blink.ucf
+├── Atlys_Button_LED/
+│   ├── README.md
+│   ├── button_led.v
+│   └── button_led.ucf
+├── Atlys_4Bit_Adder/
+│   ├── README.md
+│   ├── adder4.v
+│   └── adder4.ucf
+└── Atlys_4Bit_Adder_Subtractor/
+    ├── README.md
+    ├── adder4.v
+    └── adder4.ucf
+```
+
+### 2.2 Recommended workflow
+
+For a new project, follow this general sequence:
+
+1. Complete the software installation and board USB/JTAG setup described in this guide.
+2. Open the individual project's folder and read its README.
+3. Create a new ISE project for that design.
+4. Add the project's Verilog source file or files.
+5. Add the matching UCF constraints file.
+6. Select the correct top-level Verilog module.
+7. Synthesize, implement, and generate the `.bit` programming file.
+8. Program the Atlys FPGA using iMPACT.
+9. Follow the individual project's README to operate and test the design.
+
+### 2.3 What belongs in each project README?
+
+The README inside an individual project folder should explain that particular design, including its purpose, inputs and outputs, Verilog modules, important logic, UCF pin assignments, example inputs and expected outputs, and project-specific testing or troubleshooting.
+
+This top-level README is the common setup and programming guide. It is not intended to replace the individual project explanations.
+
+---
+
+## 3. Software and Installation
+
+### 3.1 Software
 ·   Xilinx ISE Design Suite 14.7 WebPACK: creates the project, synthesizes and implements the design, and generates
     the .bit file.
 ·   Verilog HDL: describes the calculator logic.
@@ -29,10 +84,10 @@ result LEDs.
 The steps assume ISE is installed at ~/Documents/14.7/ISE_DS and the environment script is
 ~/Documents/14.7/ISE_DS/settings64.sh.
 
-### How to install the software?
+### 3.2 How to install the software?
 Go to the link: https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/legacy-ise/v2012_4---14_7.html
 
-(14.7 is the latest software that supports DIGILENT Atyls
+(ISE 14.7 is the legacy Xilinx toolchain used in this guide for the Digilent Atlys and its Spartan-6 FPGA. Use the WebPACK edition and check the download page for the available installation files.)
 
 <img width="1919" height="895" alt="Picture" src="https://github.com/user-attachments/assets/bed561b1-c5b3-46e6-91fb-384a4bbbe15a" />
 
@@ -65,7 +120,9 @@ The graphical installation wizard should open.
 
 <img width="977" height="713" alt="Picture" src="https://github.com/user-attachments/assets/c271ac16-3ea1-4382-a980-97b4b0264ae9" />
 
-When installing, if the drive installation failed, follow the steps listed here before using iMPACT.
+## 4. Configure Digilent USB/JTAG Support on Ubuntu
+
+When installing, if the driver installation failed, follow the steps listed here before using iMPACT. These checks are also useful if iMPACT cannot detect the Atlys board.
 
 <img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/8cc27144-ba95-4b15-a967-f41533511323" />
 
@@ -208,14 +265,14 @@ source "$HOME/Documents/14.7/ISE_DS/settings64.sh"
 impact
 
 Inside iMPACT:
-## 1. Select Configure devices using Boundary-Scan (JTAG).
-## 2. Click OK.
-## 3. Try Initialize Chain.
-## 4. If the FPGA appears as xc6slx45, right-click it.
-## 5. Select Assign New Configuration File and choose your generated .bit file.
-## 6. Select No if asked whether to assign an SPI/BPI PROM file.
-## 7. Right-click the FPGA and select Program.
-## 8. Leave Verify unchecked, as in our previous procedure, and click OK/Program.
+1. Select Configure devices using Boundary-Scan (JTAG).
+2. Click OK.
+3. Try Initialize Chain.
+4. If the FPGA appears as xc6slx45, right-click it.
+5. Select Assign New Configuration File and choose your generated .bit file.
+6. Select No if asked whether to assign an SPI/BPI PROM file.
+7. Right-click the FPGA and select Program.
+8. Leave Verify unchecked, as in our previous procedure, and click OK/Program.
 If programming succeeds, you can test the FPGA design.
 
 ### Step 9 — If the windrvr6 warning remains
@@ -235,7 +292,7 @@ If iMPACT still cannot detect the board after the checks above:
 Do not repeatedly retry detection without gathering the new output.
 
 
-## 4. Create the ISE Project
+## 5. Create an ISE Project
 ### Step 1 — Open a terminal and load the ISE environment:
   source ~/Documents/14.7/ISE_DS/settings64.sh
   ise
@@ -260,8 +317,14 @@ Add the license file when prompted.
 
 <img width="1279" height="720" alt="Picture" src="https://github.com/user-attachments/assets/f2656c0a-b10c-4a3e-a3c1-e8b5a1edfd38" />
 
-### Step 3 — Name the project Atlys_Adder_Subtractor. Choose an easy-to-find folder, for example
-~/Documents/FPGA/Atlys_Adder_Subtractor, and click Next.
+### Step 3 — Choose a project name
+Enter a meaningful name for the project. For example, you can use `Atlys_Adder_Subtractor` for the adder/subtractor project, or another name for a different design. Choose an easy-to-find folder, for example:
+
+```text
+~/Documents/FPGA/Atlys_Adder_Subtractor
+```
+
+Click **Next**.
 
 <img width="641" height="711" alt="Picture" src="https://github.com/user-attachments/assets/443637f1-1816-4fc6-838d-53ecff603277" />
 
@@ -288,13 +351,13 @@ flow if prompted. Click Next.
 
 <img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/2d972cf7-e6b6-4440-bdfd-f062417d5e0f" />
 
-### Step 7 — Open adder4.v, replace its contents with the code in Section 5, and save.
+### Step 7 — Open adder4.v, replace its contents with the verilog code.
 
 <img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/4e857fb7-a081-474e-9905-50e947956ddf" />
 
 <img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/3d6d33bb-d938-4e72-a669-4775c40d1748" />
 
-### Step 8 — Create or add a UCF file named adder4.ucf and paste the constraints in Section 6.
+### Step 8 — Create or add a UCF file named adder4.ucf and add the constraints.
 
 <img width="1279" height="960" alt="Picture" src="https://github.com/user-attachments/assets/30277845-ee7c-489f-9965-8b65d0fbdb5e" />
 
@@ -313,117 +376,23 @@ flow if prompted. Click Next.
 ### Step 9 — Confirm adder4 is the top module. If needed, right-click it in the Hierarchy pane and choose Set as Top
 Module.
 
-## 5. Complete Verilog Code
-This version uses a 20-bit debounce counter, sufficient for approximately 10 ms at 100 MHz. ADD is the startup
-default. Pressing a button selects that mode until the other button is pressed.
-  module debounce_button #(
-       parameter integer CLK_HZ = 100_000_000
-  )(
-       input wire clk,
-       input wire button_in,
-       output reg press_pulse = 1'b0
-  );
-       reg sync_1 = 1'b0;
-       reg sync_2 = 1'b0;
-       reg stable_state = 1'b0;
 
-       localparam integer DEBOUNCE_COUNT = CLK_HZ / 100; // 10 ms
-       reg [19:0] counter = 0;
 
-       always @(posedge clk) begin
-         sync_1 <= button_in;
-         sync_2 <= sync_1;
-         press_pulse <= 1'b0;
+## 6. Check the Project Source and Constraints Before Building
 
-         if (sync_2 == stable_state) begin
-           counter <= 0;
-         end
-         else if (counter >= DEBOUNCE_COUNT - 1) begin
+Before starting synthesis, check that the files added to ISE belong to the project you intend to build.
 
-counter <= 0;
-            stable_state <= sync_2;
-            if (sync_2 == 1'b1)
-                press_pulse <= 1'b1;
-          end
-          else begin
-            counter <= counter + 1'b1;
-          end
-     end
-endmodule
+- The Verilog source file or files must contain the design implementation.
+- The UCF file must contain the pin assignments required by that design.
+- The top-level module selected in ISE must match the module that connects to the board-level inputs and outputs.
+- The signal names in the UCF must match the top-level Verilog port names.
+- The FPGA family, device, package and speed grade must match the Atlys board configuration used in this guide.
 
-module adder4 (
-     input wire        clk,
-     input wire [7:0] sw,
-     input wire        btn_add,
-     input wire        btn_sub,
-     output wire [7:0] led
-);
-     wire [3:0] a;
-     wire [3:0] b;
-     wire add_press;
-     wire sub_press;
+The individual project folder's README is the reference for that project's Verilog code, signal names, pin assignments and expected behaviour. Use the source and UCF files from the same project folder; do not mix constraints from different projects unless you have deliberately checked that they match.
 
-     // 0 = ADD, 1 = SUBTRACT. ADD is the startup mode.
-     reg sub_mode = 1'b0;
+For the adder/subtractor example shown in the project-creation screenshots, the top-level module is `adder4`, and its ports include `clk`, `sw`, `btn_add`, `btn_sub` and `led`. Other projects will have different module and port names.
 
-     assign a = sw[7:4];
-     assign b = sw[3:0];
-
-     debounce_button ADD_BUTTON (
-          .clk(clk), .button_in(btn_add), .press_pulse(add_press)
-     );
-     debounce_button SUB_BUTTON (
-          .clk(clk), .button_in(btn_sub), .press_pulse(sub_press)
-     );
-
-     // If both buttons are pressed together, ADD has priority.
-     always @(posedge clk) begin
-          if (add_press)
-            sub_mode <= 1'b0;
-          else if (sub_press)
-            sub_mode <= 1'b1;
-     end
-
-     wire [4:0] a_ext;
-     wire [4:0] b_ext;
-     wire [4:0] result;
-
-     assign a_ext = {1'b0, a};
-     assign b_ext = {1'b0, b};
-     assign result = sub_mode ? (a_ext - b_ext) : (a_ext + b_ext);
-
-     assign led[4:0] = result;
-     assign led[7:5] = 3'b000;
-endmodule
-
-## 6. Complete UCF Constraints
-These constraints use the pin assignments discussed for the Atlys board. The LED I/O standards intentionally differ,
-matching the reference UCF shared for this project. Do not change them only to suppress the mixed-bus warning.
-  NET "sw<0>" LOC = "A10" | IOSTANDARD = LVCMOS33;
-  NET "sw<1>" LOC = "D14" | IOSTANDARD = LVCMOS33;
-  NET "sw<2>" LOC = "C14" | IOSTANDARD = LVCMOS33;
-  NET "sw<3>" LOC = "P15" | IOSTANDARD = LVCMOS33;
-  NET "sw<4>" LOC = "P12" | IOSTANDARD = LVCMOS33;
-  NET "sw<5>" LOC = "R5" | IOSTANDARD = LVCMOS33;
-  NET "sw<6>" LOC = "T5" | IOSTANDARD = LVCMOS33;
-  NET "sw<7>" LOC = "E4" | IOSTANDARD = LVCMOS33;
-
-  NET "led<0>" LOC = "U18" | IOSTANDARD=LVCMOS25 | SLEW=QUIETIO | DRIVE=2;
-  NET "led<1>" LOC = "M14" | IOSTANDARD=LVCMOS25 | SLEW=QUIETIO | DRIVE=2;
-  NET "led<2>" LOC = "N14" | IOSTANDARD=LVCMOS25 | SLEW=QUIETIO | DRIVE=2;
-  NET "led<3>" LOC = "L14" | IOSTANDARD=LVCMOS25 | SLEW=QUIETIO | DRIVE=2;
-  NET "led<4>" LOC = "M13" | IOSTANDARD=LVCMOS25 | SLEW=QUIETIO | DRIVE=2;
-  NET "led<5>" LOC = "D4" | IOSTANDARD=LVCMOS33 | SLEW=QUIETIO | DRIVE=2;
-  NET "led<6>" LOC = "P16" | IOSTANDARD=LVCMOS25 | SLEW=QUIETIO | DRIVE=2;
-  NET "led<7>" LOC = "N12" | IOSTANDARD=LVCMOS33 | SLEW=QUIETIO | DRIVE=2;
-
-  NET "clk"   LOC = "L15" | IOSTANDARD=LVCMOS33;
-  NET "btn_add" LOC = "F5" | IOSTANDARD=LVCMOS33;
-  NET "btn_sub" LOC = "F6" | IOSTANDARD=LVCMOS33;
-
-Assumptions: the 100 MHz clock is on L15; BTNC is F5; BTNR is F6. Confirm against the board revision and the
-known-working LED-blink project. The comments in a UCF are explanatory only; the LOC and IOSTANDARD
-attributes are the actual constraints.
+---
 
 ## 7. Synthesize, Implement and Generate the Bitstream
 ### Step 1 — In the Processes pane, double-click Synthesize - XST and wait for completion.
@@ -444,7 +413,7 @@ attributes are the actual constraints.
 
 <img width="1919" height="1080" alt="Picture" src="https://github.com/user-attachments/assets/86a85cff-3ca4-4daf-9262-41a1a4ed95aa" />
 
-### Step 4 — Confirm that adder4.bit is created in the project's implementation directory.
+### Step 4 — Confirm that 'file_name'.bit is created in the project's implementation directory.
 
 <img width="1917" height="740" alt="Picture" src="https://github.com/user-attachments/assets/84ea0db5-f4c2-4da4-beb1-4f681d970a12" />
 
@@ -472,7 +441,7 @@ xc6slx45.
 
 <img width="1026" height="805" alt="Picture" src="https://github.com/user-attachments/assets/7a5f6877-efa5-43f3-8d83-cdf7c2d5799b" />
 
-### Step 5 — When prompted to assign a configuration file, select the generated adder4.bit by clicking ‘Open’ button and
+### Step 5 — When prompted to assign a configuration file, select the generated .bit file by clicking ‘Open’ button and
 then when prompted to upload the .bit to flash PROM, press NO.
 
 <img width="1026" height="805" alt="Picture" src="https://github.com/user-attachments/assets/4985c9f9-9357-4847-8f02-b2926b0d2ede" />
@@ -491,49 +460,41 @@ then when prompted to upload the .bit to flash PROM, press NO.
 
 <img width="1026" height="805" alt="Picture" src="https://github.com/user-attachments/assets/a86fcb13-fdd6-4fd1-bee5-64b7d10cfc33" />
 
-### Step 8 — Follow the tests in Section 9.
+### Step 8 — Confirm that programming completed successfully
+Wait for iMPACT to report that programming has completed successfully. If an error is reported, check the JTAG connection and the iMPACT console before retrying.
+
 JTAG-loaded configuration is volatile. After removing board power, program the .bit file again unless you separately
 program the SPI flash for automatic configuration at power-up.
 
-## 9. How to Operate the Calculator
-### 9.1 Enter A and B
-Set A using SW7–SW4 and B using SW3–SW0. ON/high means 1; OFF/low means 0. Read each group from its most
-significant bit to its least significant bit.
+## 9. After Programming: Operate and Verify the Design
 
-### 9.2 Select an operation
-ADD: press BTNC (centre pushbutton) once, then release it. Addition stays selected.
-SUBTRACT: press BTNR (right pushbutton) once, then release it. Subtraction stays selected.
-To return to addition, press BTNC again. These are mode-selection buttons; you do not need to hold them down.
+Once iMPACT has successfully programmed the FPGA, the design is running on the board. The way you interact with it depends on the project.
 
-### 9.3 Read the result
-LD4–LD0 display the five result bits. LD4 is the most significant bit; LD0 is the least significant bit. A lit LED
-represents 1 and an unlit LED represents 0. LD7–LD5 are forced low by the program.
-A                             B                                 Selected mode                    LD4 LD3 LD2 LD1 LD0
-7 (0111)                      3 (0011)                          ADD                              01010 = 10
-7 (0111)                      3 (0011)                          SUBTRACT                         00100 = 4
-3 (0011)                      7 (0111)                          SUBTRACT                         11100 = −4
-15 (1111)                     1 (0001)                          ADD                              10000 = 16
-15 (1111)                     15 (1111)                         ADD                              11110 = 30
+1. Open the README inside the project folder you programmed.
+2. Check which physical switches, pushbuttons, LEDs or other board interfaces the project uses.
+3. Apply the example inputs described in that project's README.
+4. Compare the observed board behaviour with the expected outputs.
+5. If the result is unexpected, check the project's pin assignments, top-level module, board connections and any project-specific assumptions.
 
-## 10. Test the Design
-·   Set SW7–SW4 to 0111 (A = 7). Set SW3–SW0 to 0011 (B = 3).
-·   Press BTNC and confirm LD4–LD0 show 01010 (10). Release BTNC; ADD remains selected.
-·   Press BTNR and confirm LD4–LD0 show 00100 (4). Release BTNR; SUBTRACT remains selected.
+Do not assume that every project uses the same switches, buttons or LEDs. Always use the UCF file and individual project README that belong to the project being programmed.
 
-·   Set A = 0011 (3) and B = 0111 (7). Ensure SUBTRACT is selected. The LEDs should show 11100, which
-    represents −4 in five-bit two’s complement.
-·   Press BTNC again and verify that the mode returns to ADD.
+### 9.1 Reprogramming after power-off
 
+A bitstream loaded through JTAG configures the FPGA's volatile configuration memory. After the board is powered off, that configuration is lost. Program the `.bit` file again after power-up unless you separately program the SPI flash for automatic configuration at power-up.
+
+---
 ## 11. Troubleshooting
-Top module missing: Set adder4 as the top module and save all source files.
-UCF errors: Check that the UCF names match the Verilog ports exactly: clk, sw, btn_add, btn_sub and led.
-Buttons do not select correctly: Verify BTNC/F5, BTNR/F6, clock L15 and button polarity against your board
-revision.
-Place:838 warning: The reference constraints intentionally use mixed standards on the LED bus. Do not change valid
-assignments just to silence the warning.
-Design disappears after power-off: JTAG configuration is volatile; reprogram after power-up unless SPI flash is
-separately configured.
-Wrong numerical result: Check switch order, selected operation, and read LD4 as the most significant result bit.
+
+| Problem | What to check |
+|---|---|
+| Top module missing | Set `adder4` as the top module and save all source files. |
+| UCF errors | Check that the UCF names match the Verilog ports exactly: `clk`, `sw`, `btn_add`, `btn_sub` and `led`. |
+| Buttons do not select correctly | Verify BTNC/F5, BTNR/F6, clock L15 and button polarity against your board revision. |
+| Place:838 warning | The reference constraints intentionally use mixed standards on the LED bus. Do not change valid assignments just to silence the warning. |
+| Design disappears after power-off | JTAG configuration is volatile; reprogram after power-up unless SPI flash is separately configured. |
+| Wrong numerical result | Check switch order, selected operation, and read LD4 as the most significant result bit. |
+
+The USB/JTAG troubleshooting procedure in Section 4 also covers USB detection, udev permissions, Adept libraries, plugin dependencies and the `windrvr6` warning.
 
 ## 12. References
 ·   Digilent Atlys official reference page: https://digilent.com/reference/programmable-logic/atlys/reference-manual
@@ -543,6 +504,3 @@ Wrong numerical result: Check switch order, selected operation, and read LD4 as 
     dresden.de/wiki/Atlys_rm1f5c.pdf?fileId=448
 ·   User Constraints File for the Digilent Atlys board, Rev. C: https://github.com/alexforencich/verilog-
     uart/blob/master/example/ATLYS/fpga/fpga.ucf
-
-Learning note: the full-adder diagram explains the arithmetic structure. The supplied Verilog uses the + and - operators,
-which synthesis maps into FPGA logic.
