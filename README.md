@@ -1,8 +1,9 @@
 # Digilent Atlys FPGA 
 
 **Beginner’s Step-by-Step Guide**  
-**FPGA:** Spartan-6 XC6SLX45 · 
-**Software Tools:** Xilinx ISE 14.7 WebPACK · iMPACT
+**FPGA:** Spartan-6 XC6SLX45 ·  </br>
+**Software Tools:** Xilinx ISE 14.7 WebPACK · iMPACT · </br>
+**Operating System:** Ubuntu 24.04 LTS </br>
 
 ---------------------------------------------------------------------------------------------------
 
